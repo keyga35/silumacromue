@@ -6,7 +6,13 @@
   <meta name="theme-color" content="#0f172a">
   <title>Simulador Oficial MUE 2026 - Generador de Casos Aleatorios</title>
   
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- jsPDF para exportación a PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -36,7 +42,7 @@
     body {
       user-select: none;
     }
-    .text-content-selectable {
+    .text-selectable {
       user-select: text;
     }
     ::-webkit-scrollbar {
@@ -64,6 +70,7 @@
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-full flex flex-col font-sans transition-colors duration-200">
 
+  <!-- CABECERA FIJA -->
   <header class="bg-slate-900 text-white sticky top-0 z-40 border-b border-slate-800 shadow-sm">
     <div class="max-w-3xl mx-auto px-3.5 h-14 flex items-center justify-between">
       <div class="flex items-center space-x-2.5 cursor-pointer" onclick="goToHomePrompt()">
@@ -98,6 +105,7 @@
     </div>
   </header>
 
+  <!-- CUERPO PRINCIPAL -->
   <main class="flex-1 max-w-3xl w-full mx-auto p-3.5 md:p-5 flex flex-col justify-start">
     
     <!-- PANTALLA 1: INICIO Y GENERACIÓN DINÁMICA -->
@@ -108,7 +116,7 @@
           <div>
             <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 mb-2">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-              <span>Motor Generativo · Sin Textos Fijos</span>
+              <span>Motor Generativo · Sin Repetición</span>
             </div>
             <h2 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white leading-tight">
               Generador de Casos Prácticos MUE
@@ -117,8 +125,8 @@
           <span class="text-3xl p-2 bg-slate-50 dark:bg-slate-800 rounded-2xl">🎲</span>
         </div>
 
-        <p class="text-xs md:text-sm text-slate-600 dark:text-slate-300 mt-2.5 leading-relaxed text-content-selectable">
-          Simulacro oficial de <strong>15 preguntas consecutivas</strong> según la Orden PJC/311/2026. <strong>Cada caso se genera dinámicamente</strong> combinando perfiles de pacientes, constantes vitales, situaciones clínicas y opciones aleatorias barajadas en cada intento.
+        <p class="text-xs md:text-sm text-slate-600 dark:text-slate-300 mt-2.5 leading-relaxed text-selectable">
+          Simulacro oficial de <strong>15 preguntas consecutivas</strong> según la Orden PJC/311/2026. <strong>Cada caso se genera dinámicamente</strong> combinando perfiles, constantes vitales y opciones barajadas en cada intento.
         </p>
 
         <div class="mt-4 grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 text-center">
@@ -145,7 +153,7 @@
         
         <!-- BOTÓN PRINCIPAL DE GENERACIÓN ALEATORIA -->
         <button onclick="generateRandomFreshExam()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 active:scale-[0.99] text-white font-black py-4 px-4 rounded-xl shadow-lg transition flex items-center justify-center space-x-2.5 text-sm md:text-base border border-emerald-500/30">
-          <svg class="w-5 h-5 animate-spin-slow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
           <span>🎲 GENERAR NUEVO CASO ALEATORIO (15 PREG)</span>
@@ -161,17 +169,15 @@
         <div class="space-y-1.5">
           <label class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between">
             <span>Filtro de Especialidad / Bloque:</span>
-            <span id="topicCountBadge" class="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold">12 áreas clínicas</span>
+            <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold">Áreas clínicas oficiales</span>
           </label>
           <select id="curriculumAreaSelect" class="w-full text-xs md:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-3 font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
             <option value="ALL">🎲 Cualquier área del temario (Máxima aleatoriedad)</option>
-            <option value="CARDIO">🫀 Cardiovascular y Arritmias (IAM, EAP, Shock Cardiogénico, Aorta)</option>
-            <option value="RESP">🫁 Respiratorio Crítico (TEP, Asma de Riesgo Vital, EPOC / VMNI)</option>
-            <option value="SEPSIS">🦠 Sepsis, Infecciones y Fallo Renal (Urosepsis, Absceso, Foco)</option>
-            <option value="NEURO">🧠 Neurología Urgente (Código Ictus, Wake-Up, HSA, Status)</option>
-            <option value="TRAUMA">🩸 Politrauma y Reanimación (Shock Hemorrágico, Tórax, Pelvis, TCE)</option>
-            <option value="TOX">🧪 Toxicología y Metabólicas (CAD, Hipoglucemia, Tricíclicos, Humos/CO/CN)</option>
-            <option value="OTRAS">⚡ Emergencias Especiales (Anafilaxia, Torsión testicular, Eclampsia)</option>
+            <option value="CARDIO">🫀 Cardiovascular y Arritmias (IAM, EAP, Shock, Aorta)</option>
+            <option value="RESP">🫁 Respiratorio Crítico (TEP, Asma de Riesgo Vital, EPOC)</option>
+            <option value="SEPSIS">🦠 Sepsis, Infecciones y Fallo Renal (Urosepsis, Obstrucción)</option>
+            <option value="NEURO">🧠 Neurología Urgente (Código Ictus, Wake-Up, HSA)</option>
+            <option value="TRAUMA">🩸 Politrauma y Reanimación (Shock Hemorrágico, Tórax)</option>
           </select>
         </div>
 
@@ -190,7 +196,7 @@
               <span class="text-xs font-extrabold text-slate-800 dark:text-slate-200">Examen Completo</span>
               <input type="radio" name="examModeRadio" value="triad" onchange="onModeChange(this.value)" class="text-emerald-600 focus:ring-emerald-500">
             </div>
-            <span class="text-[11px] text-slate-500 dark:text-slate-400">45 preg · 90 min (3 casos generados). Apto ≥ 20 pts.</span>
+            <span class="text-[11px] text-slate-500 dark:text-slate-400">45 preg · 90 min (3 casos). Apto ≥ 20 pts.</span>
           </label>
         </div>
 
@@ -222,7 +228,7 @@
           </div>
           <span id="vignetteToggleLabel" class="text-[11px] text-amber-800 dark:text-amber-400 font-semibold underline">Ocultar texto</span>
         </div>
-        <div id="examVignetteBody" class="mt-2 text-xs md:text-sm text-slate-800 dark:text-slate-200 font-serif leading-relaxed max-h-48 overflow-y-auto pr-1 text-content-selectable">
+        <div id="examVignetteBody" class="mt-2 text-xs md:text-sm text-slate-800 dark:text-slate-200 font-serif leading-relaxed max-h-48 overflow-y-auto pr-1 text-selectable">
           <!-- Texto de la viñeta -->
         </div>
       </div>
@@ -230,7 +236,7 @@
       <!-- Tarjeta de pregunta y opciones A-B-C-D -->
       <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-6 shadow-sm border border-slate-200 dark:border-slate-800 flex-1 flex flex-col justify-between space-y-4">
         <div>
-          <h3 id="examQuestionText" class="text-sm md:text-base font-bold text-slate-900 dark:text-white leading-snug text-content-selectable">
+          <h3 id="examQuestionText" class="text-sm md:text-base font-bold text-slate-900 dark:text-white leading-snug text-selectable">
             <!-- Enunciado de la pregunta -->
           </h3>
           <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1 italic">
@@ -312,23 +318,37 @@
         </div>
       </div>
 
-      <!-- BOTÓN GENERAR NUEVO CASO INMEDIATAMENTE -->
-      <div class="bg-gradient-to-r from-emerald-700 to-teal-800 rounded-2xl p-4.5 text-white shadow-md flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div class="text-center sm:text-left space-y-0.5">
-          <div class="font-extrabold text-sm md:text-base flex items-center justify-center sm:justify-start gap-1.5">
-            <span>✨</span>
-            <span>Generar Nuevo Caso Inédito</span>
+      <!-- BOTONES DE ACCIÓN POST-EXAMEN (GENERAR OTRO + DESCARGAR PDF) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="bg-gradient-to-r from-emerald-700 to-teal-800 rounded-2xl p-4 text-white shadow-md flex items-center justify-between">
+          <div class="space-y-0.5">
+            <div class="font-black text-xs md:text-sm flex items-center">
+              <span>✨ Generar Caso Inédito</span>
+            </div>
+            <p class="text-[11px] text-emerald-100">Nueva viñeta y preguntas.</p>
           </div>
-          <p class="text-xs text-emerald-100">
-            El motor genera una nueva viñeta, constantes y preguntas aleatorias.
-          </p>
+          <button onclick="generateRandomFreshExam()" class="bg-white text-emerald-950 font-black px-3.5 py-2 rounded-xl shadow text-xs hover:bg-emerald-50 transition whitespace-nowrap flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>Generar</span>
+          </button>
         </div>
-        <button onclick="generateRandomFreshExam()" class="w-full sm:w-auto bg-white text-emerald-950 font-black px-4 py-2.5 rounded-xl shadow-md text-xs hover:bg-emerald-50 active:scale-95 transition flex items-center justify-center gap-1.5 whitespace-nowrap">
-          <svg class="w-4 h-4 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          <span>Generar Caso Distinto</span>
-        </button>
+
+        <div class="bg-gradient-to-r from-blue-700 to-indigo-800 rounded-2xl p-4 text-white shadow-md flex items-center justify-between">
+          <div class="space-y-0.5">
+            <div class="font-black text-xs md:text-sm flex items-center">
+              <span>📄 Exportar a PDF</span>
+            </div>
+            <p class="text-[11px] text-blue-100">Guarda el caso y fórmulas.</p>
+          </div>
+          <button onclick="exportExamPDF()" class="bg-white text-blue-950 font-black px-3.5 py-2 rounded-xl shadow text-xs hover:bg-blue-50 transition whitespace-nowrap flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            <span>PDF</span>
+          </button>
+        </div>
       </div>
 
       <div class="flex items-center justify-between pt-1">
@@ -345,7 +365,7 @@
       </div>
 
       <div id="resultsDetailedList" class="space-y-4">
-        <!-- Renderizado dinámicamente con la fórmula esto + esto = esto -->
+        <!-- Renderizado dinámicamente -->
       </div>
 
       <div class="pt-3 pb-8">
@@ -387,10 +407,9 @@
   <script>
     /* ==============================================================
        MOTOR DE GENERACIÓN PROCEDURAL DE CASOS Y PREGUNTAS MUE
-       Basado en el Programa Formativo Oficial BOE-A-2026-7635 y guías vigentes
+       Basado en el Programa Formativo Oficial BOE-A-2026-7635
        ============================================================== */
 
-    // Banco de Arquetipos Clínicos Nucleares
     const ARCHETYPES = [
       {
         code: "SCA_VD",
@@ -398,11 +417,11 @@
         topic: "CARDIO",
         generator: function() {
           const names = ["Mujer de 67 años", "Varón de 71 años", "Mujer de 74 años", "Varón de 64 años"];
-          const history = ["hipertensa y dislipémica en tratamiento con enalapril", "fumador con antecedentes de cardiopatía isquémica familiar", "con diabetes tipo 2 y obesidad grado I"];
-          const timeOnset = Math.floor(Math.random() * 45) + 35; // 35 a 80 min
-          const pas = Math.floor(Math.random() * 14) + 78; // 78-92
-          const pad = Math.floor(Math.random() * 10) + 48; // 48-58
-          const fc = Math.floor(Math.random() * 10) + 38; // 38-48
+          const history = ["hipertensa y dislipémica en tratamiento con enalapril", "fumador con antecedentes de cardiopatía isquémica", "con diabetes tipo 2 y obesidad grado I"];
+          const timeOnset = Math.floor(Math.random() * 45) + 35; 
+          const pas = Math.floor(Math.random() * 14) + 78; 
+          const pad = Math.floor(Math.random() * 10) + 48; 
+          const fc = Math.floor(Math.random() * 10) + 38; 
           const id = "MUE-" + Math.floor(1000 + Math.random() * 9000);
 
           const title = `Caso ${id}: Síndrome Coronario Agudo con Hipotensión y Afectación de Ventrículo Derecho`;
@@ -419,7 +438,7 @@
               ],
               correct: 0,
               detail: "La elevación territorial del ST en derivaciones II, III y aVF con imágenes especulares en cara lateral alta (I, aVL) define un IAM transmural de cara inferior.",
-              distractors: "La pericarditis cursa con elevación cóncava difusa no territorial. El TEP suele cursar con taquicardia sinusal o patrón S1Q3T3. La disección tipo B no afecta a la aorta ascendente ni al territorio coronario.",
+              distractors: "La pericarditis cursa con elevación cóncava difusa no territorial. El TEP suele cursar con taquicardia sinusal o patrón S1Q3T3.",
               formula: "ST elevado en II, III, aVF + descenso en I, aVL = IAMCEST Inferior, por oclusión transmural aguda de la arteria coronaria derecha o circunfleja."
             },
             {
@@ -432,7 +451,7 @@
               ],
               correct: 0,
               detail: "Ante todo IAM inferior con hipotensión arterial y campos pulmonares limpios, es mandatorio registrar V3R y V4R para detectar afectación del ventrículo derecho.",
-              distractors: "V7-V9 exploran la cara posterior (se buscan si hay descenso de ST en V1-V2). La ergometría está contraindicada en fase aguda. El Holter no tiene indicación de urgencia.",
+              distractors: "V7-V9 exploran la cara posterior. La ergometría está contraindicada en fase aguda.",
               formula: "IAM inferior + Hipotensión + Pulmones limpios = Derivaciones derechas (V4R), por la altísima frecuencia de infarto concomitante del ventrículo derecho."
             },
             {
@@ -446,7 +465,7 @@
               correct: 0,
               detail: "El ventrículo derecho infartado pierde contractilidad y depende críticamente de una precarga elevada para mantener el gasto hacia el corazón izquierdo.",
               distractors: "Los vasodilatadores (nitratos, morfina) y los diuréticos reducen bruscamente el retorno venoso, precipitando un shock refractario grave.",
-              formula: "IAM de Ventrículo Derecho + Hipotensión = Aporte prudente de volumen (precarga), porque el corazón derecho disfuncionante necesita presión de llenado para enviar sangre al ventrículo izquierdo."
+              formula: "IAM de Ventrículo Derecho + Hipotensión = Aporte prudente de volumen (precarga), porque el corazón derecho disfuncionante necesita presión de llenado."
             },
             {
               text: "El paciente mantiene bradicardia sintomática con signos de hipoperfusión. ¿Qué fármaco inicial está indicado?",
@@ -458,8 +477,8 @@
               ],
               correct: 0,
               detail: "En bradicardias sintomáticas con inestabilidad hemodinámica, la atropina 0,5 mg en bolo IV (repetible hasta 3 mg) es el fármaco de primera línea para revertir el tono vagal.",
-              distractors: "La adenosina y el verapamilo bloquean el nodo AV y empeoran la bradicardia. La digoxina es un cronótropo negativo peligroso en isquemia aguda.",
-              formula: "Bradicardia sintomática + Hipotensión = Atropina 0,5 mg IV, porque bloquea el hipertono vagal reflejo frecuente en la isquemia del territorio inferior."
+              distractors: "La adenosina y el verapamilo bloquean el nodo AV y empeoran la bradicardia.",
+              formula: "Bradicardia sintomática + Hipotensión = Atropina 0,5 mg IV, porque bloquea el hipertono vagal reflejo frecuente en la isquemia inferior."
             },
             {
               text: "El hospital dispone de sala de hemodinámica activa las 24 horas a 15 minutos. ¿Cuál es la estrategia de reperfusión indicada?",
@@ -470,9 +489,9 @@
                 "Coronariografía programada electiva en 48 horas"
               ],
               correct: 0,
-              detail: "En el IAMCEST el tiempo es miocardio. Si la angioplastia primaria puede realizarse en menos de 120 minutos desde el diagnóstico (y < 90 min en centro con hemodinámica), es la estrategia de elección.",
-              distractors: "Nunca se debe esperar a que las enzimas cardiacas se eleven para reperfundir un IAMCEST evidente. Esperar 12 o 48 horas genera necrosis irreversible.",
-              formula: "IAMCEST + Sala de Hemodinámica accesible en <120 min = Angioplastia Primaria Urgente, porque la apertura mecánica inmediata del vaso salva músculo cardiaco y reduce la mortalidad."
+              detail: "En el IAMCEST el tiempo es miocardio. Si la angioplastia primaria puede realizarse en menos de 120 minutos desde el diagnóstico, es la estrategia de elección.",
+              distractors: "Nunca se debe esperar a que las enzimas cardiacas se eleven para reperfundir un IAMCEST evidente.",
+              formula: "IAMCEST + Sala de Hemodinámica accesible en <120 min = Angioplastia Primaria Urgente, porque la apertura mecánica inmediata del vaso salva miocardio."
             },
             {
               text: "¿Qué fármaco antianginoso clásico debe evitarse terminantemente en este paciente?",
@@ -484,8 +503,8 @@
               ],
               correct: 0,
               detail: "Los nitratos son venodilatadores que disminuyen la precarga venosa sistémica; en un infarto de ventrículo derecho inducen shock cardiogénico iatrogénico grave.",
-              distractors: "El AAS, los anticoagulantes y las estatinas forman parte del tratamiento estándar del SCA sin contraindicación hemodinámica.",
-              formula: "Nitratos + Infarto de VD = Hipotensión profunda y Shock, porque eliminan el volumen de llenado del que depende obligatoriamente el ventrículo derecho."
+              distractors: "El AAS y los anticoagulantes forman parte del tratamiento estándar del SCA sin contraindicación hemodinámica.",
+              formula: "Nitratos + Infarto de VD = Hipotensión profunda y Shock, porque eliminan el volumen de llenado del ventrículo derecho."
             },
             {
               text: "¿Qué complicación eléctrica nodal es especialmente frecuente en el infarto inferior?",
@@ -497,8 +516,8 @@
               ],
               correct: 0,
               detail: "La arteria del nodo auriculoventricular nace de la arteria coronaria derecha en el 90% de los individuos, por lo que el IAM inferior asocia con frecuencia bloqueos AV.",
-              distractors: "El síndrome de Brugada o las torsades dependen de canales iónicos. Los trastornos hematológicos no son complicaciones de la conducción cardiaca.",
-              formula: "IAM inferior + Arteria coronaria derecha = Bloqueo AV, porque la irrigación del nodo auriculoventricular procede de la arteria coronaria derecha dominante."
+              distractors: "El síndrome de Brugada o las torsades dependen de canales iónicos.",
+              formula: "IAM inferior + Arteria coronaria derecha = Bloqueo AV, porque la irrigación del nodo auriculoventricular procede de la coronaria derecha dominante."
             },
             {
               text: "Durante la monitorización el paciente presenta pérdida brusca de conciencia y el monitor muestra Taquicardia Ventricular sin pulso. ¿Qué acción es inmediata?",
@@ -509,9 +528,9 @@
                 "Adenosina 12 mg en bolo"
               ],
               correct: 0,
-              detail: "La TV sin pulso y la fibrilación ventricular son ritmos de parada cardiaca desfibrilables. Se debe aplicar descarga no sincronizada (150-200 J bifásico) y reiniciar RCP de inmediato.",
-              distractors: "La sincronización se usa únicamente si hay pulso palpable. La atropina y adenosina no son fármacos para ritmos desfibrilables de parada.",
-              formula: "TV sin pulso = Desfibrilación eléctrica no sincronizada + RCP, porque el corazón no eyecta pulso y solo el choque eléctrico resetea la actividad caótica de los ventrículos."
+              detail: "La TV sin pulso y la fibrilación ventricular son ritmos de parada cardiaca desfibrilables. Se debe aplicar descarga no sincronizada y reiniciar RCP de inmediato.",
+              distractors: "La sincronización se usa únicamente si hay pulso palpable.",
+              formula: "TV sin pulso = Desfibrilación eléctrica no sincronizada + RCP, porque el corazón no eyecta pulso y solo el choque eléctrico resetea el ritmo."
             },
             {
               text: "Tras dos minutos de RCP se comprueba ritmo organizado en monitor pero sigue sin haber pulso palpable (AESP). ¿Cuál es la actitud?",
@@ -523,8 +542,8 @@
               ],
               correct: 0,
               detail: "La Actividad Eléctrica Sin Pulso (AESP) no se desfibrila. El pilar es mantener compresiones de calidad, adrenalina precoz y diagnosticar causas reversibles (4H/4T).",
-              distractors: "Desfibrilar una AESP es inútil y perjudicial. No deben interrumpirse las compresiones torácicas más de 10 segundos para pruebas diagnósticas.",
-              formula: "AESP = RCP + Adrenalina + Búsqueda de Causas Reversibles (4H/4T), porque hay actividad eléctrica pero colapso mecánico y la electricidad no restaura el bombeo."
+              distractors: "Desfibrilar una AESP es inútil y perjudicial.",
+              formula: "AESP = RCP + Adrenalina + Búsqueda de Causas Reversibles (4H/4T), porque hay actividad eléctrica pero colapso mecánico."
             },
             {
               text: "Si el paciente hubiera debutado con dolor desgarrador transfixiante con asimetría de pulsos en extremidades, ¿qué patología priorizaría?",
@@ -536,8 +555,8 @@
               ],
               correct: 0,
               detail: "El dolor desgarrador de inicio instantáneo irradiado a la espalda con asimetría de pulsos en extremidades es el cuadro guía del síndrome aórtico agudo.",
-              distractors: "La pericarditis y los problemas esofágicos no cursan con asimetría de pulsos periféricos ni isquemia aguda de ramas aórticas.",
-              formula: "Dolor desgarrador hiperagudo + Asimetría de pulsos = Sospecha de Disección Aórtica, porque el desgarro de la íntima compromete los orificios arteriales periféricos."
+              distractors: "La pericarditis y los problemas esofágicos no cursan con asimetría de pulsos periféricos.",
+              formula: "Dolor desgarrador hiperagudo + Asimetría de pulsos = Sospecha de Disección Aórtica, porque el desgarro de la íntima compromete los orificios arteriales."
             },
             {
               text: "Llega la analítica inicial extraída a los 40 minutos del dolor y la troponina ultrasensible es normal. ¿Qué implicación clínica tiene?",
@@ -548,9 +567,9 @@
                 "Diagnostica un tromboembolismo pulmonar"
               ],
               correct: 0,
-              detail: "En las primeras horas de un infarto, las troponinas pueden ser aún normales en sangre periférica. El diagnóstico del IAMCEST es clínico-electrocardiográfico y no espera al laboratorio.",
-              distractors: "Esperar a que la troponina sea positiva para activar la reperfusión causa retrasos letales con necrosis irreversible.",
-              formula: "ECG con elevación de ST + Troponina normal temprana = Sigue siendo IAMCEST, porque la necrosis tarda varias horas en liberar enzimas a la circulación general."
+              detail: "En las primeras horas de un infarto, las troponinas pueden ser aún normales en sangre periférica. El diagnóstico del IAMCEST es clínico-electrocardiográfico.",
+              distractors: "Esperar a que la troponina sea positiva para activar la reperfusión causa retrasos letales.",
+              formula: "ECG con elevación de ST + Troponina normal temprana = Sigue siendo IAMCEST, porque la necrosis tarda horas en liberar enzimas a la circulación."
             },
             {
               text: "En el POCUS cardiaco urgente se observa ventrículo derecho dilatado que comprime al ventrículo izquierdo, sin derrame pericárdico. ¿Qué traduce?",
@@ -562,8 +581,8 @@
               ],
               correct: 0,
               detail: "El POCUS evidencia la dilatación y fallo contráctil del VD en el contexto del infarto, desplazando el tabique hacia el VI sin líquido pericárdico.",
-              distractors: "No puede haber taponamiento cardiaco si el ecógrafo no visualiza derrame pericárdico con colapso diastólico.",
-              formula: "POCUS con dilatación de VD + Sin derrame = Fallo de Ventrículo Derecho, porque la sobrecarga y la isquemia abomban la pared libre ventricular derecha."
+              distractors: "No puede haber taponamiento cardiaco si el ecógrafo no visualiza derrame pericárdico.",
+              formula: "POCUS con dilatación de VD + Sin derrame = Fallo de Ventrículo Derecho, porque la sobrecarga abomba la pared ventricular derecha."
             },
             {
               text: "Tras recuperar circulación espontánea (ROSC), ¿cuál es el plan inmediato prioritario?",
@@ -575,8 +594,8 @@
               ],
               correct: 0,
               detail: "Tras el ROSC se deben asegurar la ventilación y perfusión, registrar ECG para reevaluar la isquemia y trasladar de inmediato para reperfusión coronaria.",
-              distractors: "El paciente posparada es un paciente crítico que no puede ir a planta; el tratamiento etiológico definitivo es la revascularización coronaria.",
-              formula: "ROSC tras parada cardiaca = Vía aérea + ECG de 12 derivaciones + Reperfusión etiológica, porque el vaso coronario sigue cerrado y repetirá la parada si no se desobstruye."
+              distractorWhy: "El paciente posparada es un paciente crítico que no puede ir a planta; el tratamiento etiológico definitivo es la revascularización coronaria.",
+              formula: "ROSC tras parada cardiaca = Vía aérea + ECG de 12 derivaciones + Reperfusión etiológica, porque el vaso coronario sigue cerrado."
             },
             {
               text: "En la analítica de control se detecta potasio de 7,4 mEq/l con QRS ancho. ¿Cuál es el objetivo inmediato del gluconato de calcio intravenoso?",
@@ -588,8 +607,8 @@
               ],
               correct: 0,
               detail: "El calcio antagoniza el efecto electrofisiológico tóxico del potasio en el miocardio aumentando el potencial umbral, pero NO modifica la cifra sérica de potasio.",
-              distractors: "El calcio no baja ni elimina el potasio corporal. Su función es exclusivamente de cardioprotección eléctrica inmediata.",
-              formula: "Calcio IV en Hiperpotasemia = Estabiliza la membrana miocárdica, porque neutraliza la cardiotoxicidad eléctrica pero no baja la cifra de potasio en sangre."
+              distractors: "El calcio no baja ni elimina el potasio corporal; su función es cardioprotección eléctrica inmediata.",
+              formula: "Calcio IV en Hiperpotasemia = Estabiliza la membrana miocárdica, porque neutraliza la cardiotoxicidad eléctrica pero no baja el potasio."
             },
             {
               text: "Si el paciente presentara ortopnea, estertores crepitantes hasta campos medios bilaterales, TA 75/40 mmHg y FEVI del 20%, ¿cuál sería el mecanismo de shock?",
@@ -601,15 +620,14 @@
               ],
               correct: 0,
               detail: "La hipotensión arterial asociada a signos evidentes de congestión pulmonar (edema agudo de pulmón) y depresión severa de la FEVI define el shock cardiogénico.",
-              distractors: "El shock distributivo y el hipovolémico cursan sin congestión pulmonar bilateral ni estertores en campos medios.",
-              formula: "Hipotensión + Estertores crepitantes (EAP) + FEVI deprimida = Shock Cardiogénico, porque el ventrículo izquierdo claudica como bomba y la sangre se estanca en el pulmón."
+              distractors: "El shock distributivo y el hipovolémico cursan sin congestión pulmonar bilateral ni estertores.",
+              formula: "Hipotensión + Estertores crepitantes (EAP) + FEVI deprimida = Shock Cardiogénico, porque el ventrículo izquierdo claudica como bomba."
             }
           ];
 
           return { id, category: "Cardiovascular y Hemodinámica", title, vignette, questions: rawQuestions };
         }
       },
-
       {
         code: "SEPSIS_URO",
         category: "Infeccioso y Nefrourología",
@@ -623,7 +641,7 @@
           const id = "MUE-" + Math.floor(1000 + Math.random() * 9000);
 
           const title = `Caso ${id}: Sepsis Grave / Shock Séptico Urinario con Uropatía Obstructiva`;
-          const vignette = `${names[Math.floor(Math.random()*names.length)]}, con antecedentes de diabetes mellitus tipo 2 y litiasis urinaria. Consulta por fiebre con escalofríos de hasta 39,3 ºC, dolor constante en fosa lumbar derecha de 14 horas de evolución y vómitos alimentarios. A la exploración: TA ${pas}/${pad} mmHg, FC ${fc} lpm, FR ${fr} rpm, SatO2 93% basal, relleno capilar 4 segundos, piel caliente y letargia leve (Glasgow 14). Puñopercusión renal derecha intensamente dolorosa. Analítica urgente: Leucocitos 19.400/mm³ con 20% de cayados, Creatinina 2,3 mg/dl (basal 0,9 mg/dl), Lactato sérico 4,8 mmol/l. Tira reactiva de orina: leucocitos +++ y nitritos positivos.`;
+          const vignette = `${names[Math.floor(Math.random()*names.length)]}, con antecedentes de diabetes mellitus tipo 2 y litiasis urinaria. Consulta por fiebre con escalofríos de hasta 39,3 ºC, dolor constante en fosa lumbar derecha de 14 horas de evolución y vómitos alimentarios. A la exploración: TA ${pas}/${pad} mmHg, FC ${fc} lpm, FR ${fr} rpm, SatO2 93% basal, relleno capilar 4 segundos, piel caliente y letargia leve (Glasgow 14). Puñopercusión renal derecha intensamente dolorosa. Analítica urgente: Leucocitos 19.400/mm³ con 20% de cayados, Creatinina 2,3 mg/dl, Lactato sérico 4,8 mmol/l. Tira reactiva de orina: leucocitos +++ y nitritos positivos.`;
 
           const rawQuestions = [
             {
@@ -635,9 +653,9 @@
                 "Gastroenteritis aguda viral autolimitada"
               ],
               correct: 0,
-              detail: "Presenta infección bacteriana documentada junto con disfunción orgánica aguda multiorgánica (renal con fracaso agudo, neurológica y respiratoria) e hiperlactacidemia > 4 mmol/l con hipotensión.",
-              distractors: "La cistitis y el cólico simple no cursan con fracaso multiorgánico ni hipoperfusión tisular. La clínica lumbar descarta gastroenteritis pura.",
-              formula: "Infección urinaria + Hipotensión + Lactato > 4 = Shock Séptico / Sepsis Grave, porque existe una respuesta inmunitaria desregulada que amenaza la supervivencia del paciente."
+              detail: "Presenta infección bacteriana documentada junto con disfunción orgánica aguda multiorgánica (renal, neurológica) e hiperlactacidemia > 4 mmol/l con hipotensión.",
+              distractors: "La cistitis y el cólico simple no cursan con fracaso multiorgánico ni hipoperfusión.",
+              formula: "Infección urinaria + Hipotensión + Lactato > 4 = Shock Séptico / Sepsis Grave, porque existe respuesta inmunitaria desregulada que amenaza la vida."
             },
             {
               text: "¿Cuál es la conducta diagnóstica y terapéutica prioritaria en la primera hora?",
@@ -649,8 +667,8 @@
               ],
               correct: 0,
               detail: "Las guías de Sepsis recomiendan tomar cultivos microbiológicos inmediatamente sin demorar el inicio del antibiótico de amplio espectro más allá de los primeros 60 minutos.",
-              distractors: "Cada hora de retraso en la administración del antibiótico en shock séptico incrementa la mortalidad en un 7-8%.",
-              formula: "Sepsis con hipoperfusión = Cultivos + Antibiótico IV precoz (<1h) + Sueroterapia, porque el retardo antimicrobiano condiciona de forma directa la supervivencia."
+              distractors: "Cada hora de retraso en la administración del antibiótico incrementa la mortalidad en un 7-8%.",
+              formula: "Sepsis con hipoperfusión = Cultivos + Antibiótico IV precoz (<1h) + Sueroterapia, porque el retardo antimicrobiano penaliza la supervivencia."
             },
             {
               text: "¿Qué solución intravenosa es de primera elección para la resucitación volumétrica?",
@@ -661,9 +679,9 @@
                 "No administrar ningún líquido por vía intravenosa"
               ],
               correct: 0,
-              detail: "Los cristaloides balanceados o el suero salino al 0,9% (30 mL/kg en las primeras 3 horas con reevaluación continua) son el fluido de primera línea según las guías internacionales.",
-              distractors: "Los almidones provocan fracaso renal y necesidad de diálisis. El glucosado al 5% no expande el espacio intravascular.",
-              formula: "Resucitación en sepsis = Cristaloides isotónicos, porque restauran la volemia efectiva sin toxicidad tubular renal."
+              detail: "Los cristaloides balanceados o el suero salino al 0,9% (30 mL/kg en las primeras 3 horas) son el fluido de primera línea según las guías internacionales.",
+              distractors: "Los almidones provocan fracaso renal y necesidad de diálisis.",
+              formula: "Resucitación en sepsis = Cristaloides isotónicos, porque restauran la volemia efectiva sin toxicidad renal."
             },
             {
               text: "Tras infundir 2.000 mL de cristaloides, la PAM persiste en 55 mmHg. ¿Qué vasopresor de primera elección debe iniciarse?",
@@ -675,8 +693,8 @@
               ],
               correct: 0,
               detail: "La noradrenalina es el vasopresor de primera línea para revertir la vasoplejía periférica y alcanzar el objetivo hemodinámico de PAM ≥ 65 mmHg.",
-              distractors: "La dobutamina es un inotrópico que vasodilata las arterias periféricas y agravaría la hipotensión en ausencia de vasopresor.",
-              formula: "Hipotensión persistente tras fluidos en sepsis = Noradrenalina precoz, porque combate la vasoplejía periférica mediante su potente efecto alfa-1 adrenérgico."
+              distractors: "La dobutamina es un inotrópico que vasodilata y agravaría la hipotensión.",
+              formula: "Hipotensión persistente tras fluidos en sepsis = Noradrenalina precoz, porque combate la vasoplejía periférica con efecto alfa-1."
             },
             {
               text: "¿Qué complicación tiempo-dependiente es crucial descartar de inmediato en este paciente?",
@@ -687,7 +705,7 @@
                 "Vejiga neurógena pura no complicada"
               ],
               correct: 0,
-              detail: "La asociación de infección urinaria y litiasis obstructiva crea una piouronefrosis a tensión que mantiene el shock séptico hasta que se desobstruye mecánicamente.",
+              detail: "La asociación de infección urinaria y litiasis obstructiva crea una piouronefrosis a tensión que mantiene el shock séptico hasta que se desobstruye.",
               distractors: "El quiste renal y la nefropatía diabética no causan fiebre, shock ni puñopercusión positiva aguda.",
               formula: "Sepsis urinaria + Litiasis previa = Descartar Obstrucción Ureteral, porque un sistema cerrado infectado a presión genera bacteriemia constante."
             },
@@ -700,9 +718,9 @@
                 "Alta al domicilio con citrato potásico oral"
               ],
               correct: 0,
-              detail: "El control del foco infeccioso es mandatorio. Sin descompresión urológica urgente, los antibióticos no penetran en la orina estancada a alta presión y el shock es mortal.",
-              distractors: "Esperar a la expulsión espontánea de un cálculo de 9 mm infectado provoca fallo multiorgánico y muerte.",
-              formula: "Obstrucción urinaria + Infección + Sepsis = Drenaje Urológico Inmediato (Catéter doble J o Nefrostomía), porque el control mecánico del foco es tan prioritario como el antibiótico."
+              detail: "El control del foco infeccioso es mandatorio. Sin descompresión urológica urgente, los antibióticos no penetran en la orina estancada a alta presión.",
+              distractors: "Esperar a la expulsión espontánea de un cálculo infectado de 9 mm provoca fallo multiorgánico y muerte.",
+              formula: "Obstrucción urinaria + Infección + Sepsis = Drenaje Urológico Inmediato, porque el control mecánico del foco es indispensable."
             },
             {
               text: "¿Para qué sirve monitorizar la evolución seriada del lactato sanguíneo?",
@@ -714,7 +732,7 @@
               ],
               correct: 0,
               detail: "El descenso y aclaramiento del lactato sérico refleja la restauración del metabolismo aeróbico y la eficacia de la resucitación hemodinámica.",
-              distractors: "El lactato es un metabolito de hipoxia tisular, no un parámetro microbiológico ni de composición litiásica.",
+              distractors: "El lactato es un metabolito de hipoxia tisular, no un parámetro microbiológico.",
               formula: "Lactato seriado descendente = Buena respuesta a la reanimación hemodinámica, porque traduce restauración de la oxigenación tisular."
             },
             {
@@ -726,9 +744,9 @@
                 "Nitroglicerina intravenosa en dosis altas"
               ],
               correct: 0,
-              detail: "Ante disfunción miocárdica séptica demostrada con gasto cardiaco insuficiente a pesar de conseguir PAM adecuada con vasopresores, está indicado asociar dobutamina.",
-              distractors: "Suspender la noradrenalina reproduciría la hipotensión severa. La adenosina y los nitratos no aportan soporte inotrópico.",
-              formula: "PAM adecuada con Noradrenalina + Hipocontractilidad miocárdica = Añadir Dobutamina, porque aporta el soporte inotrópico beta-1 que el miocardio aturdido por citoquinas necesita."
+              detail: "Ante disfunción miocárdica séptica demostrada con gasto cardiaco insuficiente a pesar de conseguir PAM adecuada, está indicado asociar dobutamina.",
+              distractors: "Suspender la noradrenalina reproduciría la hipotensión severa.",
+              formula: "PAM adecuada con Noradrenalina + Hipocontractilidad miocárdica = Añadir Dobutamina, porque aporta soporte inotrópico beta-1."
             },
             {
               text: "El paciente presenta potasio de 7,3 mEq/l con ondas T picudas y ensanchamiento del QRS. ¿Qué fármaco se administra primero?",
@@ -739,9 +757,9 @@
                 "Diuréticos de asa exclusivamente"
               ],
               correct: 0,
-              detail: "Las alteraciones electrocardiográficas por hiperpotasemia anuncian arritmias letales inminentes. El calcio IV protege la membrana miocárdica en 1 a 3 minutos.",
-              distractors: "La insulina tarda entre 15 y 30 minutos en actuar. Las resinas tardan horas. El calcio previene la parada cardiaca de forma inmediata.",
-              formula: "Potasio > 7 + ECG patológico = Calcio IV primero, porque neutraliza la toxicidad eléctrica miocárdica mientras se aplican medidas para bajar el potasio."
+              detail: "Las alteraciones electrocardiográficas por hiperpotasemia anuncian arritmias letales inminentes. El calcio IV protege la membrana miocárdica en 1-3 minutos.",
+              distractors: "La insulina tarda entre 15 y 30 minutos en actuar.",
+              formula: "Potasio > 7 + ECG patológico = Calcio IV primero, porque neutraliza la cardiotoxicidad eléctrica."
             },
             {
               text: "¿Cuál es el mecanismo de acción de la infusión de insulina regular con glucosa en la hiperpotasemia?",
@@ -752,9 +770,9 @@
                 "Inhibir los receptores de aldosterona"
               ],
               correct: 0,
-              detail: "La insulina activa la bomba sodio-potasio ATPasa celular, introduciendo el potasio del plasma hacia el interior celular de forma temporal sin variar el potasio corporal total.",
-              distractors: "La insulina no elimina potasio del cuerpo; cuando su efecto cesa, el potasio puede volver al plasma si no se ha excretado.",
-              formula: "Insulina + Glucosa = Redistribución de K al interior celular, porque mete el potasio transitoriamente sin eliminarlo del cuerpo."
+              detail: "La insulina activa la bomba sodio-potasio ATPasa celular, introduciendo el potasio del plasma hacia el interior celular de forma temporal sin variar el total corporal.",
+              distractors: "La insulina no elimina potasio del cuerpo por sí misma.",
+              formula: "Insulina + Glucosa = Redistribución de K al interior celular, porque lo mete transitoriamente sin eliminarlo."
             },
             {
               text: "El paciente entra en anuria con hiperpotasemia refractaria a fármacos y acidosis metabólica con pH 7,10. ¿Cuál es el tratamiento indicado?",
@@ -765,9 +783,9 @@
                 "Traslado a planta de medicina interna"
               ],
               correct: 0,
-              detail: "Las indicaciones de diálisis urgente en fracaso renal agudo son: hiperpotasemia refractaria, acidosis metabólica severa refractaria (pH < 7,15) y anuria.",
-              distractors: "El calcio solo protege temporalmente el corazón. Ningún fármaco sustituye a la diálisis en un paciente anúrico con hiperpotasemia refractaria.",
-              formula: "Anuria + Hiperpotasemia refractaria + Acidosis = Hemodiálisis urgente, porque es la única forma de eliminar físicamente el potasio y corregir el equilibrio ácido-base."
+              detail: "Las indicaciones de diálisis urgente en fracaso renal agudo son hiperpotasemia refractaria, acidosis metabólica severa refractaria (pH < 7,15) y anuria.",
+              distractors: "Ningún fármaco sustituye a la diálisis en un paciente anúrico con hiperpotasemia severa.",
+              formula: "Anuria + Hiperpotasemia refractaria + Acidosis = Hemodiálisis urgente, porque es la única forma de eliminar físicamente el potasio."
             },
             {
               text: "¿Por qué el tratamiento antibiótico debe iniciarse precozmente y no postergarse?",
@@ -778,9 +796,9 @@
                 "Porque la prueba de imagen requiere cobertura antibiótica previa obligada"
               ],
               correct: 0,
-              detail: "La evidencia clínica demuestra que la mortalidad por sepsis grave y shock séptico aumenta exponencialmente con cada hora de demora en la primera dosis antibiótica.",
-              distractors: "Los antibióticos no disuelven la litiasis ni tienen efecto analgésico primario; frenan la replicación bacteriana y la cascada inflamatoria.",
-              formula: "Shock séptico + Demora de antibiótico = Mayor mortalidad, porque la replicación bacteriana masiva perpetúa la disfunción multiorgánica."
+              detail: "La evidencia clínica demuestra que la mortalidad por sepsis grave y shock séptico aumenta exponencialmente con cada hora de demora en la primera dosis.",
+              distractors: "Los antibióticos no disuelven la litiasis; frenan la replicación bacteriana y la cascada inflamatoria.",
+              formula: "Shock séptico + Demora de antibiótico = Mayor mortalidad, porque la replicación bacteriana masiva perpetúa la disfunción orgánica."
             },
             {
               text: "¿Qué fenómeno hemodinámico caracteriza al shock séptico frente al shock hipovolémico?",
@@ -791,9 +809,9 @@
                 "Ausencia de producción de lactato"
               ],
               correct: 0,
-              detail: "El shock distributivo séptico se define por relajación y pérdida de tono del músculo liso vascular secundaria a mediadores inflamatorios (óxido nítrico, citoquinas).",
-              distractors: "El shock hipovolémico responde con vasoconstricción compensatoria; el séptico presenta vasoplejía y resistencia vascular baja.",
-              formula: "Shock séptico = Vasoplejía (caída de resistencias sistémicas), porque los mediadores inflamatorios relajan el músculo liso vascular."
+              detail: "El shock distributivo séptico se define por relajación y pérdida de tono del músculo liso vascular secundaria a mediadores inflamatorios.",
+              distractors: "El shock hipovolémico responde con vasoconstricción compensatoria intensa.",
+              formula: "Shock séptico = Vasoplejía (caída de resistencias sistémicas), porque los mediadores inflamatorios relajan los vasos."
             },
             {
               text: "Tras la carga de volumen inicial de 30 mL/kg, ¿qué principio debe regir la fluidoterapia posterior?",
@@ -804,9 +822,9 @@
                 "Administrar únicamente soluciones coloides hipertónicas"
               ],
               correct: 0,
-              detail: "El exceso de fluidos en sepsis se asocia a síndrome compartimental, edema pulmonar y mayor mortalidad. La fluidoterapia debe ser individualizada y guiada por respuesta.",
-              distractors: "Infundir litros sin control una vez alcanzada la volemia daña la permeabilidad capilar y empeora el pronóstico.",
-              formula: "Fluidos en sepsis = Reanimación guiada por objetivos y tolerancia, porque el exceso de agua extravasada lesiona pulmón y órganos."
+              detail: "El exceso de fluidos en sepsis se asocia a edema pulmonar y mayor mortalidad. La fluidoterapia debe ser individualizada y guiada por respuesta.",
+              distractors: "Infundir litros sin control una vez alcanzada la volemia daña la permeabilidad capilar.",
+              formula: "Fluidos en sepsis = Reanimación guiada por objetivos y tolerancia, porque el exceso de agua extravasada lesiona el pulmón."
             },
             {
               text: "¿Qué ocurriría si se mantiene el tratamiento médico óptimo pero no se descomprime la vía urinaria?",
@@ -817,16 +835,15 @@
                 "El pronóstico no variará en absoluto"
               ],
               correct: 0,
-              detail: "En cualquier infección con foco cerrado a tensión (piouronefrosis, absceso, peritonitis), la descompresión mecánica es indispensable para la curación del paciente.",
-              distractors: "Los antibióticos no logran esterilizar una cavidad a presión con orina purulenta estancada sin evacuación física.",
-              formula: "Sepsis sin control del foco = Fracaso terapéutico letal, porque no se puede apagar el fuego si la fuga de bacterias sigue abierta."
+              detail: "En cualquier infección con foco cerrado a tensión (piouronefrosis), la descompresión mecánica es indispensable para la curación.",
+              distractors: "Los antibióticos no logran esterilizar una cavidad a presión con orina purulenta estancada.",
+              formula: "Sepsis sin control del foco = Fracaso terapéutico letal, porque no se puede apagar el fuego si la fuente sigue obstruida."
             }
           ];
 
           return { id, category: "Infeccioso y Nefrourología", title, vignette, questions: rawQuestions };
         }
       },
-
       {
         code: "ICTUS_WAKEUP",
         category: "Neurología Urgente",
@@ -838,7 +855,7 @@
           const id = "MUE-" + Math.floor(1000 + Math.random() * 9000);
 
           const title = `Caso ${id}: Código Ictus y Manejo del Wake-Up Stroke en Ventana Extendida`;
-          const vignette = `${names[Math.floor(Math.random()*names.length)]}, hipertenso con fibrilación auricular conocida no anticoagulada. Su cónyuge refiere que se acostó asintomático a las 23:30 h; al despertarse a las 08:15 h lo encuentra con imposibilidad para hablar y debilidad completa del hemicuerpo derecho. A la llegada del SEM (08:40 h): TA ${pas}/${pad} mmHg, FC 92 lpm arrítmica, glucemia capilar 118 mg/dl, SatO2 96% basal. Exploración neurológica: afasia global mixta, desviación oculocefálica a la izquierda, hemiplejia fascio-braquio-crural derecha flácida con reflejo de Babinski derecho presente. Escala NIHSS: 19 puntos.`;
+          const vignette = `${names[Math.floor(Math.random()*names.length)]}, hipertenso con fibrilación auricular conocida no anticoagulada. Se acostó asintomático a las 23:30 h; al despertarse a las 08:15 h lo encuentra con imposibilidad para hablar y debilidad completa del hemicuerpo derecho. A la llegada del SEM (08:40 h): TA ${pas}/${pad} mmHg, FC 92 lpm arrítmica, glucemia capilar 118 mg/dl. Exploración: afasia global, desviación oculocefálica a la izquierda, hemiplejia derecha flácida. NIHSS: 19 puntos.`;
 
           const rawQuestions = [
             {
@@ -851,8 +868,8 @@
               ],
               correct: 0,
               detail: "La activación del Código Ictus permite despejar el escáner y movilizar al equipo multidisciplinar. La neuroimagen antes de cualquier fármaco antitrombótico es mandatoria.",
-              distractors: "Administrar ácido acetilsalicílico o anticoagulantes antes de descartar una hemorragia intracraneal con TC puede resultar letal.",
-              formula: "Déficit focal agudo = Código Ictus + TC craneal previo a cualquier fármaco, porque si se administra un antitrombótico ante una hemorragia cerebral el resultado es letal."
+              distractors: "Administrar aspirina o anticoagulantes antes de descartar hemorragia intracraneal con TC puede resultar letal.",
+              formula: "Déficit focal agudo = Código Ictus + TC craneal previo a antitrombóticos, porque si hay hemorragia cerebral el tratamiento es letal."
             },
             {
               text: "El TC descarta hemorragia y el Angio-TC demuestra oclusión de M1 izquierda. ¿Qué implicación tiene que sea un ictus del despertar?",
@@ -863,9 +880,9 @@
                 "Permite el alta inmediata para consulta externa"
               ],
               correct: 0,
-              detail: "Los ensayos clínicos DAWN y DEFUSE-3 demostraron que la presencia de tejido cerebral salvable (mismatch núcleo/penumbra en TC perfusión o RM) permite rescatar pacientes en ventana extendida.",
-              distractors: "El criterio rígido de exclusión por horario ha sido superado por la selección basada en tejido viable demostrado por técnicas avanzadas.",
-              formula: "Wake-up stroke + Oclusión de gran vaso = Valorar trombectomía por neuroimagen avanzada, porque la penumbra isquémica puede seguir viva independientemente de la hora del reloj."
+              detail: "Los ensayos clínicos demostraron que la presencia de tejido cerebral salvable (mismatch en TC perfusión o RM) permite rescatar pacientes en ventana extendida.",
+              distractors: "El criterio rígido de exclusión por horario ha sido superado por la selección basada en tejido viable.",
+              formula: "Wake-up stroke + Oclusión de gran vaso = Valorar trombectomía por neuroimagen avanzada, porque la penumbra isquémica puede seguir viva."
             },
             {
               text: "Confirmada la presencia de tejido cerebral recuperable y oclusión proximal de M1, ¿cuál es el tratamiento definitivo de elección?",
@@ -877,8 +894,8 @@
               ],
               correct: 0,
               detail: "En las oclusiones proximales de gran vaso intracraneal con penumbra recuperable, la trombectomía mecánica con stent retriever o aspiración es el tratamiento de máxima eficacia.",
-              distractors: "Los antiagregantes orales no tienen capacidad de disolver un gran trombo en la arteria cerebral media. La cardioversión no desobstruye el vaso cerebral.",
-              formula: "Oclusión de gran vaso (M1) + Criterios de viabilidad = Trombectomía Mecánica, porque extrae físicamente el trombo y recanaliza la arteria ocluida."
+              distractors: "Los antiagregantes orales no tienen capacidad de disolver un gran trombo en la arteria cerebral media.",
+              formula: "Oclusión de gran vaso (M1) + Criterios de viabilidad = Trombectomía Mecánica, porque extrae físicamente el trombo."
             },
             {
               text: "Si se considerara fibrinolisis con rt-PA y la TA fuera de 218/118 mmHg, ¿cuál es la conducta correcta respecto a la presión arterial?",
@@ -889,9 +906,9 @@
                 "Suspender el tratamiento de reperfusión de forma definitiva"
               ],
               correct: 0,
-              detail: "Para administrar rt-PA con seguridad, la TA debe situarse por debajo de 185/110 mmHg de forma controlada con fármacos IV como labetalol o urapidilo.",
-              distractors: "Fibrinolisar con TA > 185/110 mmHg dispara el riesgo de hemorragia cerebral mortal. Bajar la tensión de forma brusca colapsa la perfusión en la penumbra.",
-              formula: "rt-PA + TA > 185/110 mmHg = Bajar TA de forma controlada antes de la infusión, porque previene la transformación hemorrágica catastrófica."
+              detail: "Para administrar rt-PA con seguridad, la TA debe situarse por debajo de 185/110 mmHg de forma controlada con fármacos IV.",
+              distractors: "Fibrinolisar con TA elevada dispara el riesgo de hemorragia cerebral mortal.",
+              formula: "rt-PA + TA > 185/110 mmHg = Bajar TA de forma controlada antes de la infusión, porque previene la transformación hemorrágica."
             },
             {
               text: "Tras la reperfusión, el paciente presenta cefalea brusca intensa, vómitos y caída de 4 puntos en el Glasgow. ¿Qué complicación debe sospecharse prioritariamente?",
@@ -903,8 +920,8 @@
               ],
               correct: 0,
               detail: "Cualquier deterioro neurológico brusco tras tratamiento de reperfusión en ictus obliga a realizar un TC craneal sin contraste inmediato para descartar hemorragia.",
-              distractors: "En este contexto clínico, atribuir el deterioro a migraña o sinusitis retrasa el manejo de una hemorragia cerebral aguda potencialmente letal.",
-              formula: "Deterioro neurológico posreperfusión en ictus = TC urgente para descartar Hemorragia, porque el sangrado cerebral exige revertir cualquier efecto antitrombótico."
+              distractors: "Atribuir el deterioro a migraña o sinusitis retrasa el manejo de una hemorragia cerebral aguda.",
+              formula: "Deterioro neurológico posreperfusión en ictus = TC urgente para descartar Hemorragia, porque el sangrado cerebral exige revertir antitrombóticos."
             },
             {
               text: "Si la glucemia capilar hubiera sido de 32 mg/dl al ingreso, ¿cuál habría sido la conducta inmediata?",
@@ -916,8 +933,8 @@
               ],
               correct: 0,
               detail: "La hipoglucemia es un imitador clásico del ictus (stroke mimic) que puede provocar hemiplejia y afasia transitorias que revierten rápidamente al corregir la glucosa.",
-              distractors: "Someter a neurointervencionismo o fibrinolisis a un paciente que solo sufre hipoglucemia es una negligencia médica evitable.",
-              formula: "Focalidad neurológica + Glucemia baja = Glucosa IV primero, porque la neuroglucopenia imita un ictus pero se cura en minutos al normalizar el azúcar."
+              distractors: "Someter a intervencionismo a un paciente que solo sufre hipoglucemia es una negligencia evitable.",
+              formula: "Focalidad neurológica + Glucemia baja = Glucosa IV primero, porque la neuroglucopenia imita un ictus pero se cura al normalizar el azúcar."
             },
             {
               text: "¿Qué papel desempeña la fibrilación auricular no anticoagulada en este caso?",
@@ -929,8 +946,8 @@
               ],
               correct: 0,
               detail: "La estasis sanguínea en la aurícula izquierda durante la FA favorece la formación de trombos que embolizan al territorio carotídeo cerebral.",
-              distractors: "La FA es responsable de uno de cada cuatro ictus isquémicos, típicamente de mayor gravedad por oclusión de grandes vasos.",
-              formula: "Fibrilación auricular sin anticoagular = Fuente cardioembólica de ictus, porque el trombo formado en la aurícula viaja directamente al árbol cerebral."
+              distractors: "La FA es responsable de uno de cada cuatro ictus isquémicos.",
+              formula: "Fibrilación auricular sin anticoagular = Fuente cardioembólica de ictus, porque el trombo formado en la aurícula viaja al cerebro."
             },
             {
               text: "¿Por qué no se debe administrar aspirina antes de realizar el TC craneal?",
@@ -942,7 +959,7 @@
               ],
               correct: 0,
               detail: "Hasta un 20% de los accidentes cerebrovasculares son hemorrágicos. Administrar antiagregantes a ciegas agrava el hematoma y el riesgo vital.",
-              distractors: "La clínica neurológica no permite diferenciar con certeza infarto de hemorragia sin una prueba de neuroimagen previa.",
+              distractors: "La clínica neurológica no permite diferenciar con certeza infarto de hemorragia sin imagen.",
               formula: "Sospecha de Ictus + Sin TC = No dar Aspirina ni Heparina, porque si hay un vaso roto en el cerebro los antiagregantes empeoran la hemorragia."
             },
             {
@@ -955,7 +972,7 @@
               ],
               correct: 0,
               detail: "El NIHSS cuantifica el deterioro neurológico. Valores superiores a 15-16 reflejan daño cerebral grave con alta sospecha de oclusión de gran vaso arterial.",
-              distractors: "Un NIHSS alto no contraindica la trombectomía; al contrario, es el grupo de pacientes que más se beneficia de la recanalización.",
+              distractors: "Un NIHSS alto no contraindica la trombectomía; al contrario, es el grupo que más se beneficia.",
               formula: "NIHSS > 15 = Déficit neurológico grave por gran vaso, porque refleja afectación motora, de lenguaje y cortical extensa."
             },
             {
@@ -968,8 +985,8 @@
               ],
               correct: 0,
               detail: "En pacientes con ictus al despertar, la ventana de seguridad de los fármacos y procedimientos se calcula siempre desde la última hora en que se confirmó que estaba sano.",
-              distractors: "No se toma la hora de despertar como hora de inicio porque el ictus pudo haber ocurrido minutos después de acostarse.",
-              formula: "Ictus al despertar = La hora cero es la última vez visto bien, porque es el momento a partir del cual el tejido cerebral pudo empezar a sufrir isquemia."
+              distractors: "No se toma la hora de despertar como hora de inicio porque el ictus pudo haber ocurrido antes.",
+              formula: "Ictus al despertar = La hora cero es la última vez visto bien, porque es el momento a partir del cual el tejido comenzó la isquemia."
             },
             {
               text: "Si el TC craneal inicial hubiera mostrado un hematoma intraparenquimatoso extenso, ¿cuál sería la conducta?",
@@ -980,9 +997,9 @@
                 "Iniciar ácido acetilsalicílico 500 mg intravenoso"
               ],
               correct: 0,
-              detail: "El ictus hemorrágico requiere un algoritmo opuesto: suspender antitrombóticos, controlar la tensión arterial con labetalol/urapidilo y consultar con Neurocirugía.",
-              distractors: "Los fármacos de reperfusión y la antiagregación están formalmente contraindicados ante la presencia de sangre intraparenquimatosa.",
-              formula: "TC con hematoma intraparenquimatoso = Tratamiento de Hemorragia Cerebral, porque los fármacos de reperfusión isquémica son letales ante un vaso sangrante."
+              detail: "El ictus hemorrágico requiere un algoritmo opuesto: suspender antitrombóticos, controlar la tensión arterial y consultar con Neurocirugía.",
+              distractors: "Los fármacos de reperfusión isquémica están contraindicados ante hemorragia.",
+              formula: "TC con hematoma intraparenquimatoso = Tratamiento de Hemorragia Cerebral, porque los fármacos de reperfusión son letales ante un vaso sangrante."
             },
             {
               text: "Durante la evolución en urgencias el paciente inicia crisis convulsiva focal motora de 6 minutos de duración. ¿Qué diagnóstico y tratamiento procede?",
@@ -993,9 +1010,9 @@
                 "Dar el alta por presentar mejoría motora"
               ],
               correct: 0,
-              detail: "Toda crisis de > 5 min es un status convulsivo que incrementa el daño cerebral por aumento de la demanda metabólica. Requiere diazepam/clonazepam IV y carga de levetiracetam/valproato.",
-              distractors: "Las crisis epilépticas en la fase aguda del ictus consumen oxígeno en la zona de penumbra y aceleran la necrosis si no se abortan inmediatamente.",
-              formula: "Crisis comicial > 5 minutos = Tratar como Status (Benzodiacepina + Anticomicial IV), porque el consumo metabólico descontrolado destruye el cerebro isquémico."
+              detail: "Toda crisis de > 5 min es un status convulsivo que incrementa el daño cerebral por aumento de la demanda metabólica. Requiere diazepam/clonazepam IV.",
+              distractors: "Las crisis agudas en ictus consumen oxígeno en la zona de penumbra y aceleran la necrosis.",
+              formula: "Crisis comicial > 5 minutos = Tratar como Status (Benzodiacepina + Anticomicial IV), porque el consumo metabólico destruye el cerebro isquémico."
             },
             {
               text: "El nivel de conciencia se deteriora hasta Glasgow 7 con pérdida de reflejos protectores de la vía aérea. ¿Qué actuación está indicada?",
@@ -1006,9 +1023,9 @@
                 "Ventilación mecánica no invasiva con mascarilla facial"
               ],
               correct: 0,
-              detail: "Un Glasgow ≤ 8 en patología neurológica aguda conlleva incapacidad para proteger la vía aérea y riesgo crítico de broncoaspiración, hipoxia y muerte.",
-              distractors: "La VNI está contraindicada en pacientes comatosos o con incapacidad de proteger la vía aérea.",
-              formula: "Glasgow ≤ 8 en ictus = Intubación Orotraqueal (Vía Aérea Definitiva), porque previene la broncoaspiración masiva y asegura una oxigenación cerebral estable."
+              detail: "Un Glasgow ≤ 8 en patología neurológica aguda conlleva incapacidad para proteger la vía aérea y riesgo crítico de broncoaspiración y muerte.",
+              distractors: "La VNI está contraindicada en pacientes comatosos o sin reflejos protectores.",
+              formula: "Glasgow ≤ 8 en ictus = Intubación Orotraqueal (Vía Aérea Definitiva), porque previene la broncoaspiración masiva y asegura oxigenación."
             },
             {
               text: "¿Cuándo se debe reiniciar o iniciar la anticoagulación oral definitiva en este paciente con fibrilación auricular?",
@@ -1019,9 +1036,9 @@
                 "Sustituyendo permanentemente a cualquier intento de reperfusión"
               ],
               correct: 0,
-              detail: "En infartos cerebrales extensos la anticoagulación precoz se pospone días o semanas para evitar una transformación hemorrágica secundaria del tejido isquémico friable.",
+              detail: "En infartos cerebrales extensos la anticoagulación precoz se pospone días o semanas para evitar una transformación hemorrágica secundaria.",
               distractors: "Anticoagular en las primeras horas tras un infarto extenso multiplica el riesgo de hemorragia fatal.",
-              formula: "FA + Ictus isquémico extenso = Anticoagular de forma diferida (no el primer día), porque el tejido infartado friable sangra si se anticoagula de forma precoz."
+              formula: "FA + Ictus isquémico extenso = Anticoagular de forma diferida, porque el tejido infartado friable sangra si se anticoagula precozmente."
             },
             {
               text: "¿Cuál es la ubicación de ingreso adecuada tras la trombectomía mecánica?",
@@ -1032,16 +1049,15 @@
                 "Centro de crónicos ambulatorio"
               ],
               correct: 0,
-              detail: "El paciente post-trombectomía requiere monitorización neurológica y hemodinámica continua y estrecha para vigilar la recanalización y detectar complicaciones precozmente.",
-              distractors: "El riesgo de reoclusión, edema cerebral o transformación hemorrágica en las primeras 24-48 horas exige vigilancia especializada continua.",
-              formula: "Paciente post-reperfusión cerebral = Unidad de Ictus / UCI, porque la detección precoz del edema o del resangrado permite actuar antes de que haya secuelas irreversibles."
+              detail: "El paciente post-trombectomía requiere monitorización neurológica y hemodinámica continua y estrecha para vigilar la recanalización y detectar complicaciones.",
+              distractors: "El riesgo de reoclusión o edema cerebral en las primeras 24-48 horas exige vigilancia especializada continua.",
+              formula: "Paciente post-reperfusión cerebral = Unidad de Ictus / UCI, porque la detección precoz del edema o resangrado permite actuar a tiempo."
             }
           ];
 
           return { id, category: "Neurología Urgente", title, vignette, questions: rawQuestions };
         }
       },
-
       {
         code: "TEP_MASIVO",
         category: "Respiratorio y Shock Obstructivo",
@@ -1056,7 +1072,7 @@
           const id = "MUE-" + Math.floor(1000 + Math.random() * 9000);
 
           const title = `Caso ${id}: Tromboembolismo Pulmonar de Alto Riesgo con Shock Obstructivo`;
-          const vignette = `${names[Math.floor(Math.random()*names.length)]}, ${context[Math.floor(Math.random()*context.length)]}. Sufre disnea súbita e intensa en reposo seguida de síncope con recuperación incompleta. A su llegada en UME: TA ${pas}/${pad} mmHg, FC ${fc} lpm rítmica, FR ${fr} rpm, SatO2 84% con aire ambiente (apenas sube a 89% con mascarilla con reservorio a 15 l/min). Sudoroso, frío, ingurgitación yugular hasta el ángulo mandibular con auscultación pulmonar sin estertores crepitantes. ECG: taquicardia sinusal con patrón S1Q3T3 y ondas T negativas en V1-V4.`;
+          const vignette = `${names[Math.floor(Math.random()*names.length)]}, ${context[Math.floor(Math.random()*context.length)]}. Sufre disnea súbita e intensa en reposo seguida de síncope con recuperación incompleta. A su llegada en UME: TA ${pas}/${pad} mmHg, FC ${fc} lpm rítmica, FR ${fr} rpm, SatO2 84% con aire ambiente. Sudoroso, frío, ingurgitación yugular y auscultación pulmonar limpia. ECG: taquicardia sinusal con patrón S1Q3T3 y ondas T negativas en V1-V4.`;
 
           const rawQuestions = [
             {
@@ -1069,8 +1085,8 @@
               ],
               correct: 0,
               detail: "La presencia de disnea brusca, factores de riesgo trombótico, signos de sobrecarga ventricular derecha aguda e inestabilidad hemodinámica define el TEP de alto riesgo.",
-              distractors: "La neumonía y el EAP cursan con semiología auscultatoria pulmonar florida y no provocan dilatación aguda aislada de cavidades derechas con pulmones limpios.",
-              formula: "Disnea súbita + Hipotensión persistente + Signos de sobrecarga de VD = TEP de Alto Riesgo, porque el trombo masivo colapsa la circulación pulmonar y el ventrículo izquierdo queda vacío."
+              distractors: "La neumonía y el EAP cursan con semiología auscultatoria pulmonar florida.",
+              formula: "Disnea súbita + Hipotensión persistente + Signos de sobrecarga de VD = TEP de Alto Riesgo, porque el trombo masivo colapsa la circulación."
             },
             {
               text: "¿Cuál es la utilidad de solicitar un Dímero-D urgente en este paciente inestable?",
@@ -1081,9 +1097,9 @@
                 "Permite suspender la oxigenoterapia de inmediato"
               ],
               correct: 0,
-              detail: "El dímero-D solo tiene valor predictivo negativo en pacientes estables con baja o intermedia probabilidad. En shock o alta probabilidad clínica no debe solicitarse.",
-              distractors: "Esperar el resultado del dímero-D en un paciente en shock obstructivo con riesgo vital inminente es un error de práctica clínica.",
-              formula: "TEP con Shock o Alta Probabilidad = NO pedir Dímero-D, porque su valor es solo de exclusión en pacientes estables y aquí demoraría el tratamiento salvador."
+              detail: "El dímero-D solo tiene valor predictivo negativo en pacientes estables. En shock o alta probabilidad clínica no debe solicitarse.",
+              distractors: "Esperar el resultado del dímero-D en un paciente en shock obstructivo con riesgo vital inminente es un error.",
+              formula: "TEP con Shock o Alta Probabilidad = NO pedir Dímero-D, porque su valor es solo de exclusión en pacientes estables."
             },
             {
               text: "El paciente está demasiado inestable para ser trasladado a la sala de TC. ¿Qué prueba a pie de cama orienta el tratamiento de reperfusión?",
@@ -1094,9 +1110,9 @@
                 "Gammagrafía de ventilación-perfusión ambulatoria"
               ],
               correct: 0,
-              detail: "En TEP inestable, la ecocardiografía que demuestra signos de sobrecarga aguda de VD (dilatación, signo de McConnell) autoriza a iniciar reperfusión inmediata sin traslado a TC.",
-              distractors: "Mover a un paciente en shock refractario fuera del área de críticos para un TC es inseguro si el POCUS confirma la sobrecarga derecha masiva.",
-              formula: "TEP inestable + TC inseguro = POCUS cardiaco urgente (Sobrecarga de VD), porque objetivar disfunción aguda de cavidades derechas permite indicar fibrinólisis inmediata."
+              detail: "En TEP inestable, la ecocardiografía que demuestra signos de sobrecarga aguda de VD autoriza a iniciar reperfusión inmediata sin traslado a TC.",
+              distractors: "Mover a un paciente en shock refractario fuera del área de críticos para un TC es inseguro.",
+              formula: "TEP inestable + TC inseguro = POCUS cardiaco urgente (Sobrecarga de VD), porque objetivar disfunción derecha permite fibrinólisis inmediata."
             },
             {
               text: "¿Cuál es el tratamiento de reperfusión de primera elección en el TEP de alto riesgo sin contraindicaciones?",
@@ -1108,8 +1124,8 @@
               ],
               correct: 0,
               detail: "El TEP de alto riesgo cursa con mortalidad > 30% a corto plazo. La fibrinólisis intravenosa lisa el coágulo en minutos y restaura la perfusión coronaria del VD.",
-              distractors: "La aspirina no disuelve trombos masivos pulmonares. Los diuréticos reducen la precarga y provocan parada cardiaca en el fallo de VD.",
-              formula: "TEP + Shock hemodinámico = Fibrinólisis Sistémica Urgente, porque destruye la masa obstructiva en el tronco pulmonar y salva al corazón del colapso."
+              distractors: "La aspirina no disuelve trombos masivos pulmonares.",
+              formula: "TEP + Shock hemodinámico = Fibrinólisis Sistémica Urgente, porque destruye la masa obstructiva en el tronco pulmonar."
             },
             {
               text: "Si se precisa soporte vasopresor por persistencia de PAM < 65 mmHg, ¿qué fármaco es de elección?",
@@ -1120,9 +1136,9 @@
                 "Nitroglicerina en infusión continua"
               ],
               correct: 0,
-              detail: "La noradrenalina restaura la presión de perfusión coronaria del ventrículo derecho sin producir vasodilatación excesiva, estabilizando la hemodinámica.",
-              distractors: "La dobutamina aislada produce vasodilatación y agrava la hipotensión si no se asocia un vasopresor alfa-1.",
-              formula: "Shock en TEP masivo = Noradrenalina, porque sube la presión aórtica y permite que la coronaria derecha vuelva a perfundir el ventrículo derecho isquémico."
+              detail: "La noradrenalina restaura la presión de perfusión coronaria del ventrículo derecho sin producir vasodilatación excesiva.",
+              distractors: "La dobutamina aislada produce vasodilatación y agrava la hipotensión.",
+              formula: "Shock en TEP masivo = Noradrenalina, porque sube la presión aórtica y permite que la coronaria derecha vuelva a perfundir el VD."
             },
             {
               text: "¿Por qué debe evitarse la sobrecarga agresiva de volumen con fluidos en el fallo agudo de VD?",
@@ -1134,8 +1150,8 @@
               ],
               correct: 0,
               detail: "El ventrículo derecho tiene una curva de Frank-Starling muy estrecha; infundir litros produce dilatación excesiva, isquemia miocárdica derecha y compresión del VI.",
-              distractors: "En el TEP se recomiendan bolos moderados (≤ 500 mL) y no sobrecargas masivas de 2 o 3 litros.",
-              formula: "Sobrecarga de volumen masiva + Fallo agudo de VD = Interdependencia ventricular negativa y Shock, porque el tabique abomba hacia la izquierda y ahoga el llenado del VI."
+              distractors: "En el TEP se recomiendan bolos moderados (≤ 500 mL) y no sobrecargas masivas.",
+              formula: "Sobrecarga de volumen masiva + Fallo agudo de VD = Interdependencia ventricular negativa y Shock, porque el tabique ahoga al VI."
             },
             {
               text: "El paciente entra en parada cardiaca con ritmo de Actividad Eléctrica Sin Pulso. ¿Qué causa de las 4T representa este evento?",
@@ -1147,8 +1163,8 @@
               ],
               correct: 0,
               detail: "El TEP masivo es una causa clásica de parada en AESP por obstrucción mecánica del flujo de salida del ventrículo derecho (Trombosis pulmonar).",
-              distractors: "El taponamiento y el neumotórax son otras 'T', pero en este caso el cuadro clínico documentado es un tromboembolismo pulmonar.",
-              formula: "AESP en paciente con factores de trombosis = Sospecha de TEP Masivo (4T: Trombosis), requiriendo RCP continua y valorar fibrinólisis de rescate intra-parada."
+              distractors: "El taponamiento y el neumotórax son otras 'T', pero en este caso el cuadro clínico documentado es TEP.",
+              formula: "AESP en paciente con factores de trombosis = Sospecha de TEP Masivo (4T: Trombosis), requiriendo RCP y valorar fibrinólisis intra-parada."
             },
             {
               text: "Si se administra fibrinólisis durante la parada cardiaca por sospecha de TEP, ¿cuánto tiempo debe prolongarse la RCP?",
@@ -1160,8 +1176,8 @@
               ],
               correct: 0,
               detail: "Las guías de soporte vital avanzado recomiendan mantener la RCP durante al menos 60 a 90 minutos tras la infusión del fibrinolítico para permitir que actúe.",
-              distractors: "Suspender la RCP a los 10 o 20 minutos impide que el fármaco penetre en el trombo pulmonar mediante las compresiones mecánicas.",
-              formula: "Fibrinólisis en PCR por TEP = RCP prolongada (60-90 minutos), porque el fármaco necesita tiempo de circulación asistida para lisar la masa embólica."
+              distractors: "Suspender la RCP prematuramente impide que el fármaco penetre en el trombo pulmonar.",
+              formula: "Fibrinólisis en PCR por TEP = RCP prolongada (60-90 minutos), porque el fármaco necesita tiempo de circulación asistida para lisar el émbolo."
             },
             {
               text: "¿Cuál es el patrón electrocardiográfico más frecuente en el TEP, independientemente del clásico S1Q3T3?",
@@ -1172,9 +1188,9 @@
                 "Bloqueo sinoauricular de tercer grado"
               ],
               correct: 0,
-              detail: "Aunque el patrón S1Q3T3 de McGinn-White es el más conocido, la alteración electrocardiográfica más habitual en el TEP es la taquicardia sinusal.",
-              distractors: "La taquicardia sinusal refleja la respuesta adrenérgica refleja ante la caída del gasto cardiaco y la hipoxia.",
-              formula: "ECG en TEP = Taquicardia sinusal (lo más frecuente), mientras que el S1Q3T3 y la inversión de T en precordiales derechas son signos específicos de sobrecarga de VD."
+              detail: "Aunque el patrón S1Q3T3 es el más conocido, la alteración electrocardiográfica más habitual en el TEP es la taquicardia sinusal.",
+              distractors: "La taquicardia sinusal refleja la respuesta adrenérgica ante la caída del gasto cardiaco.",
+              formula: "ECG en TEP = Taquicardia sinusal (lo más frecuente), mientras que el S1Q3T3 es un signo específico de sobrecarga de VD."
             },
             {
               text: "Si el paciente tuviera una hemorragia intracraneal activa confirmada y mantuviera shock por TEP masivo, ¿qué alternativa terapéutica se plantea?",
@@ -1185,9 +1201,9 @@
                 "Alta al domicilio con reposo absoluto"
               ],
               correct: 0,
-              detail: "Ante contraindicación absoluta de fibrinólisis sistémica en TEP masivo inestable, las opciones son la embolectomía quirúrgica o la trombectomía percutánea con catéter.",
-              distractors: "La fibrinólisis está prohibida si hay sangrado intracraneal activo porque causaría la muerte inmediata por hemorragia cerebral masiva.",
-              formula: "TEP con Shock + Contraindicación de Fibrinólisis = Trombectomía Mecánica / Embolectomía, porque se extrae físicamente el trombo sin usar fármacos líticos."
+              detail: "Ante contraindicación absoluta de fibrinólisis sistémica en TEP masivo inestable, las opciones son la embolectomía quirúrgica o la trombectomía percutánea.",
+              distractors: "La fibrinólisis está prohibida si hay sangrado intracraneal activo.",
+              formula: "TEP con Shock + Contraindicación de Fibrinólisis = Trombectomía Mecánica / Embolectomía, porque se extrae físicamente el trombo."
             },
             {
               text: "¿Qué parámetro gasométrico arterial inicial es típico en el embolismo pulmonar agudo?",
@@ -1198,9 +1214,9 @@
                 "Alcalosis metabólica hipoclorémica con potasio elevado"
               ],
               correct: 0,
-              detail: "El aumento del espacio muerto alveolar y la estimulación de los receptores de distensión inducen taquipnea refleja, provocando hipoxemia con hipocapnia (lavado de CO2).",
-              distractors: "La hipercapnia solo aparece en fases terminales de agotamiento ventilatorio extremo o en pacientes con patología respiratoria previa grave.",
-              formula: "GAB en TEP = Hipoxemia + Hipocapnia (pO2 baja y pCO2 baja), porque la hiperventilación reactiva elimina dióxido de carbono pero no compensa el shunt de oxígeno."
+              detail: "El aumento del espacio muerto alveolar y la estimulación de los receptores de distensión inducen taquipnea refleja, provocando hipoxemia con hipocapnia.",
+              distractors: "La hipercapnia solo aparece en fases terminales de agotamiento ventilatorio extremo.",
+              formula: "GAB en TEP = Hipoxemia + Hipocapnia, porque la hiperventilación reactiva elimina dióxido de carbono."
             },
             {
               text: "¿Cuál es la profilaxis secundaria adecuada a largo plazo tras estabilizar este TEP provocado?",
@@ -1212,8 +1228,8 @@
               ],
               correct: 0,
               detail: "Todo episodio de tromboembolismo venoso requiere anticoagulación formal (ACO o ACOD) durante al menos 3 a 6 meses para prevenir recidivas.",
-              distractors: "La aspirina no previene de forma eficaz la recurrencia del tromboembolismo venoso en comparación con la anticoagulación.",
-              formula: "TEP superado = Anticoagulación durante 3 a 6 meses mínimo, porque la cascada protrombótica permanece activa durante meses tras el episodio inicial."
+              distractors: "La aspirina no previene de forma eficaz la recurrencia del tromboembolismo venoso.",
+              formula: "TEP superado = Anticoagulación durante 3 a 6 meses mínimo, porque la cascada protrombótica permanece activa tras el episodio."
             },
             {
               text: "¿Por qué en la auscultación pulmonar de un TEP masivo los campos suelen estar limpios de estertores?",
@@ -1224,9 +1240,9 @@
                 "Porque los pulmones no reciben sangre en absoluto"
               ],
               correct: 0,
-              detail: "A diferencia del edema agudo de pulmón, en el TEP el ventrículo izquierdo recibe poco flujo, por lo que no hay hipertensión capilar pulmonar ni trasudado alveolar.",
-              distractors: "El shock obstructivo por TEP cursa con pulmones radiológica y auscultatoriamente limpios, lo que descarta el fallo de ventrículo izquierdo.",
-              formula: "Hipotensión grave + Yugulares dilatadas + Auscultación pulmonar limpia = Shock Obstructivo (TEP / Taponamiento), porque el fallo está antes o fuera de los alvéolos."
+              detail: "A diferencia del edema agudo de pulmón, en el TEP el ventrículo izquierdo recibe poco flujo, por lo que no hay hipertensión capilar pulmonar ni trasudado.",
+              distractors: "El shock obstructivo por TEP cursa con pulmones limpios, lo que descarta el fallo de ventrículo izquierdo.",
+              formula: "Hipotensión grave + Yugulares dilatadas + Auscultación pulmonar limpia = Shock Obstructivo (TEP / Taponamiento), porque el fallo está fuera del alvéolo."
             },
             {
               text: "¿Qué signo en el POCUS cardiaco define el signo de McConnell característico del TEP?",
@@ -1238,8 +1254,8 @@
               ],
               correct: 0,
               detail: "El signo de McConnell muestra una pared libre del ventrículo derecho hipocinética o paralizada mientras que la punta o ápex del VD mantiene contracción vigorosa.",
-              distractors: "Es un signo con alta especificidad para diferenciar sobrecarga aguda de sobrecarga crónica de ventrículo derecho.",
-              formula: "POCUS con pared libre de VD parada + ápex contráctil = Signo de McConnell (TEP Agudo), porque refleja el fallo agudo del miocardio ventricular derecho ante la brusca poscarga."
+              distractors: "Es un signo con alta especificidad para diferenciar sobrecarga aguda de sobrecarga crónica de VD.",
+              formula: "POCUS con pared libre de VD parada + ápex contráctil = Signo de McConnell (TEP Agudo), porque refleja el fallo agudo miocárdico."
             },
             {
               text: "Tras la estabilización y fibrinólisis, el paciente requiere traslado a UCI. ¿Qué medio de transporte sanitario es el adecuado?",
@@ -1251,8 +1267,8 @@
               ],
               correct: 0,
               detail: "Todo paciente crítico inestable o posreperfusión requiere transporte sanitario medicalizado de Soporte Vital Avanzado con monitorización multiparamétrica continua.",
-              distractors: "Cualquier transporte no asistido en un paciente que ha recibido fibrinólisis y fármacos vasoactivos supone un riesgo letal inasumible.",
-              formula: "Paciente posreperfusión o crítico = Transporte en SVA Medicalizado, porque el riesgo de sangrado, arritmias o shock recurrente exige capacidad de reanimación continua."
+              distractors: "Cualquier transporte no asistido en un paciente posreperfusión supone un riesgo letal inasumible.",
+              formula: "Paciente posreperfusión o crítico = Transporte en SVA Medicalizado, porque el riesgo de shock recurrente exige capacidad de reanimación continua."
             }
           ];
 
@@ -1262,12 +1278,12 @@
     ];
 
     /* ==============================================================
-       ESTADO GLOBAL DEL SIMULADOR
+       ESTADO GLOBAL
        ============================================================== */
     let currentExamMode = 'single';
-    let examActiveQuestions = [];
+    let activeQuestions = [];
     let currentQIndex = 0;
-    let examUserAnswers = {};
+    let userAnswers = {};
     let examCountdownInterval = null;
     let secondsLeft = 25 * 60;
     let reviewFilter = 'all';
@@ -1280,7 +1296,6 @@
       currentExamMode = mode;
     }
 
-    // Barajador Fisher-Yates para garantizar aleatoriedad en opciones
     function shuffleArray(array) {
       const arr = [...array];
       for (let i = arr.length - 1; i > 0; i--) {
@@ -1291,12 +1306,12 @@
     }
 
     /* ==============================================================
-       GENERACIÓN DINÁMICA DE CASOS Y BARICENTRO DE PREGUNTAS
+       GENERADOR ALEATORIO
        ============================================================== */
     function generateRandomFreshExam() {
-      examUserAnswers = {};
+      userAnswers = {};
       currentQIndex = 0;
-      examActiveQuestions = [];
+      activeQuestions = [];
 
       const area = document.getElementById('curriculumAreaSelect').value;
       let eligibleArchetypes = ARCHETYPES;
@@ -1307,12 +1322,10 @@
       }
 
       if (currentExamMode === 'single') {
-        // Seleccionar 1 arquetipo al azar y generar instancia única
         const arch = eligibleArchetypes[Math.floor(Math.random() * eligibleArchetypes.length)];
         const generated = arch.generator();
 
-        // Procesar las 15 preguntas: barajar opciones aleatoriamente para que NUNCA estén en el mismo orden
-        examActiveQuestions = generated.questions.map((q, idx) => {
+        activeQuestions = generated.questions.map((q, idx) => {
           const originalCorrectText = q.options[q.correct];
           const shuffledOptions = shuffleArray(q.options);
           const newCorrectIndex = shuffledOptions.indexOf(originalCorrectText);
@@ -1331,7 +1344,6 @@
 
         secondsLeft = 25 * 60;
       } else {
-        // Modo 3 casos (45 preguntas) con 3 arquetipos diferentes
         const shuffledArchetypes = shuffleArray(eligibleArchetypes);
         const selectedArchetypes = shuffledArchetypes.slice(0, 3);
         let counter = 0;
@@ -1343,7 +1355,7 @@
             const shuffledOptions = shuffleArray(q.options);
             const newCorrectIndex = shuffledOptions.indexOf(originalCorrectText);
 
-            examActiveQuestions.push({
+            activeQuestions.push({
               ...q,
               options: shuffledOptions,
               correct: newCorrectIndex,
@@ -1359,7 +1371,6 @@
         secondsLeft = 90 * 60;
       }
 
-      // Conmutar pantallas
       document.getElementById('screenHome').classList.add('hidden');
       document.getElementById('screenResults').classList.add('hidden');
       document.getElementById('screenExam').classList.remove('hidden');
@@ -1367,7 +1378,7 @@
       document.getElementById('topTimerBox').classList.remove('hidden');
       document.getElementById('topTimerBox').classList.add('flex');
 
-      document.getElementById('totalQuestionsDisplay').textContent = examActiveQuestions.length;
+      document.getElementById('totalQuestionsDisplay').textContent = activeQuestions.length;
 
       startExamTimer();
       buildPaletteButtons();
@@ -1376,7 +1387,7 @@
     }
 
     /* ==============================================================
-       RELOJ Y TEMPORIZADOR
+       TEMPORIZADOR
        ============================================================== */
     function startExamTimer() {
       if (examCountdownInterval) clearInterval(examCountdownInterval);
@@ -1408,10 +1419,10 @@
     }
 
     /* ==============================================================
-       RENDERIZADO DE LA PREGUNTA ACTIVA
+       RENDERIZADO DE PREGUNTA
        ============================================================== */
     function renderQuestionCard() {
-      const q = examActiveQuestions[currentQIndex];
+      const q = activeQuestions[currentQIndex];
       if (!q) return;
 
       document.getElementById('examCaseBadge').textContent = q.caseBadgeText;
@@ -1424,7 +1435,7 @@
       const list = document.getElementById('examOptionsList');
       list.innerHTML = '';
       const letters = ['A', 'B', 'C', 'D'];
-      const userChoice = examUserAnswers[currentQIndex];
+      const userChoice = userAnswers[currentQIndex];
 
       q.options.forEach((optText, optIdx) => {
         const isSelected = userChoice === optIdx;
@@ -1449,7 +1460,7 @@
 
       document.getElementById('btnPrevQuestion').disabled = (currentQIndex === 0);
       const btnNext = document.getElementById('btnNextQuestion');
-      if (currentQIndex === examActiveQuestions.length - 1) {
+      if (currentQIndex === activeQuestions.length - 1) {
         btnNext.innerHTML = `<span>Revisar Paleta</span> <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
       } else {
         btnNext.innerHTML = `<span>Siguiente</span> <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>`;
@@ -1459,17 +1470,17 @@
     }
 
     function selectExamOption(idx) {
-      examUserAnswers[currentQIndex] = idx;
+      userAnswers[currentQIndex] = idx;
       renderQuestionCard();
     }
 
     function markQuestionBlank() {
-      delete examUserAnswers[currentQIndex];
+      delete userAnswers[currentQIndex];
       renderQuestionCard();
     }
 
     function goToNextQuestion() {
-      if (currentQIndex < examActiveQuestions.length - 1) {
+      if (currentQIndex < activeQuestions.length - 1) {
         currentQIndex++;
         renderQuestionCard();
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1505,12 +1516,12 @@
     }
 
     /* ==============================================================
-       PALETA Y CONTROL DE PREGUNTAS
+       PALETA Y CONTROL
        ============================================================== */
     function buildPaletteButtons() {
       const container = document.getElementById('examPaletteGrid');
       container.innerHTML = '';
-      examActiveQuestions.forEach((_, idx) => {
+      activeQuestions.forEach((_, idx) => {
         const btn = document.createElement('button');
         btn.id = `paletteItem-${idx}`;
         btn.onclick = () => jumpToPaletteQuestion(idx);
@@ -1522,13 +1533,13 @@
     }
 
     function updatePaletteButtonsVisual() {
-      const total = examActiveQuestions.length;
+      const total = activeQuestions.length;
       let answered = 0;
-      examActiveQuestions.forEach((_, idx) => {
+      activeQuestions.forEach((_, idx) => {
         const btn = document.getElementById(`paletteItem-${idx}`);
         if (!btn) return;
         const isCurrent = idx === currentQIndex;
-        const isAnswered = examUserAnswers[idx] !== undefined;
+        const isAnswered = userAnswers[idx] !== undefined;
         if (isAnswered) answered++;
 
         if (isCurrent) {
@@ -1543,8 +1554,8 @@
     }
 
     function openConfirmSubmitModal() {
-      const answered = Object.keys(examUserAnswers).length;
-      const total = examActiveQuestions.length;
+      const answered = Object.keys(userAnswers).length;
+      const total = activeQuestions.length;
       document.getElementById('modalSubmitStatsSummary').textContent = 
         `Has contestado ${answered} de ${total} preguntas. Recuerda: acierto = +1,00 | fallo = -0,25 | blanco = 0,00. ¿Deseas corregir ahora?`;
       document.getElementById('modalConfirmSubmit').classList.remove('hidden');
@@ -1568,15 +1579,15 @@
     }
 
     /* ==============================================================
-       EVALUACIÓN Y REGLA MNEMOTÉCNICA
+       EVALUACIÓN Y REVISIÓN
        ============================================================== */
     function evaluateScoresAndRenderReview() {
       let correct = 0;
       let wrong = 0;
       let blank = 0;
 
-      examActiveQuestions.forEach((q, idx) => {
-        const ans = examUserAnswers[idx];
+      activeQuestions.forEach((q, idx) => {
+        const ans = userAnswers[idx];
         if (ans === undefined) {
           blank++;
         } else if (ans === q.correct) {
@@ -1587,7 +1598,7 @@
       });
 
       const netPoints = Math.max(0, (correct * 1.0) - (wrong * 0.25));
-      const totalCount = examActiveQuestions.length;
+      const totalCount = activeQuestions.length;
 
       let passed = false;
       let bannerHtml = '';
@@ -1672,8 +1683,8 @@
       container.innerHTML = '';
       const letters = ['A', 'B', 'C', 'D'];
 
-      examActiveQuestions.forEach((q, idx) => {
-        const ans = examUserAnswers[idx];
+      activeQuestions.forEach((q, idx) => {
+        const ans = userAnswers[idx];
         const isCorrect = ans === q.correct;
         const isBlank = ans === undefined;
 
@@ -1683,20 +1694,20 @@
 
         let badgeStyle = 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
         let badgeLabel = 'EN BLANCO (0,00 pts)';
-        let borderStyle = 'border-l-4 border-l-slate-400';
+        let borderClass = 'border-l-slate-400';
 
         if (isCorrect) {
           badgeStyle = 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200 border border-emerald-300';
           badgeLabel = 'CORRECTA (+1,00 pt)';
-          borderStyle = 'border-l-4 border-l-emerald-500';
+          borderClass = 'border-l-emerald-500';
         } else if (!isBlank) {
           badgeStyle = 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-200 border border-rose-300';
           badgeLabel = 'INCORRECTA (-0,25 pts)';
-          borderStyle = 'border-l-4 border-l-rose-500';
+          borderClass = 'border-l-rose-500';
         }
 
         const card = document.createElement('div');
-        card.className = `bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-5 shadow-sm border border-slate-200 dark:border-slate-800 space-y-3 ${borderStyle}`;
+        card.className = `bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-5 shadow-sm border border-slate-200 dark:border-slate-800 space-y-3 border-l-4 ${borderClass}`;
 
         let optionsMarkup = '';
         q.options.forEach((optText, optIdx) => {
@@ -1722,7 +1733,7 @@
 
         card.innerHTML = `
           <div class="flex items-start justify-between gap-2">
-            <span class="text-xs font-bold text-slate-400">Pregunta ${idx + 1} de ${examActiveQuestions.length}</span>
+            <span class="text-xs font-bold text-slate-400">Pregunta ${idx + 1} de ${activeQuestions.length}</span>
             <span class="text-[11px] font-black px-2.5 py-0.5 rounded-full ${badgeStyle}">${badgeLabel}</span>
           </div>
           <h4 class="font-bold text-slate-900 dark:text-white text-sm md:text-base leading-snug">${q.text}</h4>
@@ -1731,7 +1742,7 @@
             ${optionsMarkup}
           </div>
 
-          <div class="mt-3 bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs space-y-2 text-content-selectable">
+          <div class="mt-3 bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs space-y-2 text-selectable">
             <div>
               <span class="font-extrabold text-slate-900 dark:text-white">Fundamento de la respuesta correcta:</span>
               <p class="text-slate-600 dark:text-slate-300 mt-0.5 leading-relaxed">${q.detail}</p>
@@ -1742,12 +1753,11 @@
             </div>
           </div>
 
-          <!-- REGLA MNEMOTÉCNICA SOLICITADA: ESTO + ESTO = ESTO, POR ESTO Y POR ESTO -->
           <div class="mt-2 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 dark:from-emerald-950/40 dark:to-teal-950/40 p-3 rounded-xl border border-emerald-500/30">
             <div class="flex items-center space-x-1.5 text-emerald-900 dark:text-emerald-300 font-black text-[11px] uppercase tracking-wide">
               <span>💡 Fórmula de Fijación Rápida (Para no olvidarla)</span>
             </div>
-            <div class="mt-1 text-xs md:text-sm font-black text-emerald-950 dark:text-emerald-100 font-mono bg-white/90 dark:bg-slate-900/90 p-2.5 rounded-lg border border-emerald-200 dark:border-emerald-800 shadow-sm text-content-selectable">
+            <div class="mt-1 text-xs md:text-sm font-black text-emerald-950 dark:text-emerald-100 font-mono bg-white/90 dark:bg-slate-900/90 p-2.5 rounded-lg border border-emerald-200 dark:border-emerald-800 shadow-sm text-selectable">
               ${q.formula}
             </div>
           </div>
@@ -1765,6 +1775,74 @@
           </div>
         `;
       }
+    }
+
+    /* ==============================================================
+       EXPORTACIÓN A PDF
+       ============================================================== */
+    function exportExamPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const letters = ['A', 'B', 'C', 'D'];
+      let y = 15;
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.text("SIMULACRO OFICIAL MUE 2026 - CORRECCIÓN DE CASO CLÍNICO", 15, y);
+      y += 7;
+
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.text("Especialidad de Medicina de Urgencias y Emergencias (Examen 12/12/2026)", 15, y);
+      y += 6;
+
+      doc.setLineWidth(0.4);
+      doc.line(15, y, 195, y);
+      y += 8;
+
+      activeQuestions.forEach((q, idx) => {
+        if (y > 260) {
+          doc.addPage();
+          y = 15;
+        }
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        const qTitle = `P${idx + 1}. ${q.text}`;
+        const splitTitle = doc.splitTextToSize(qTitle, 180);
+        doc.text(splitTitle, 15, y);
+        y += (splitTitle.length * 4.5) + 2;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+
+        q.options.forEach((opt, oIdx) => {
+          if (y > 275) { doc.addPage(); y = 15; }
+          const isCorrect = oIdx === q.correct ? " (CORRECTA)" : "";
+          const optText = `  [${letters[oIdx]}] ${opt}${isCorrect}`;
+          const splitOpt = doc.splitTextToSize(optText, 175);
+          doc.text(splitOpt, 15, y);
+          y += (splitOpt.length * 4);
+        });
+
+        y += 2;
+        if (y > 270) { doc.addPage(); y = 15; }
+
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(4, 120, 87);
+        const formulaText = `Fórmula: ${q.formula}`;
+        const splitFormula = doc.splitTextToSize(formulaText, 175);
+        doc.text(splitFormula, 15, y);
+        doc.setTextColor(0, 0, 0);
+        y += (splitFormula.length * 4.5) + 5;
+      });
+
+      doc.save(`Caso_Practico_MUE_${Date.now()}.pdf`);
     }
 
     function returnToStartScreen() {
@@ -1799,6 +1877,7 @@
       } else {
         document.documentElement.classList.remove('dark');
         document.getElementById('themeSun').classList.add('hidden');
+        document.getElementById('themeMoon').classList.add('hidden');
         document.getElementById('themeMoon').classList.remove('hidden');
       }
     }
