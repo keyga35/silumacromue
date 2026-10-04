@@ -222,22 +222,22 @@
       <!-- Barra superior de estado del caso -->
       <div class="bg-white dark:bg-slate-900 rounded-xl px-4 py-2.5 shadow-sm border border-slate-200 dark:border-slate-800 flex items-center justify-between">
         <div class="flex items-center space-x-2 truncate">
-          <span id="examCaseBadge" class="bg-slate-900 dark:bg-slate-800 text-emerald-400 text-[11px] font-black px-2 py-0.5 rounded font-mono">CASO #</span>
-          <span id="examCaseClueTag" class="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">Atención Médica Urgente</span>
+          <span id="examCaseBadge" class="bg-slate-900 dark:bg-slate-800 text-emerald-400 text-[11px] font-black px-2 py-0.5 rounded font-mono">CASO 1</span>
+          <span id="examCaseClueTag" class="text-xs font-bold text-slate-500 dark:text-slate-400 truncate">Atención Médica de Urgencias</span>
         </div>
         <div class="text-xs font-bold text-slate-500 shrink-0">
           Pregunta <span id="currentQuestionNumDisplay" class="text-slate-900 dark:text-white font-black text-sm">1</span>/<span id="totalQuestionsDisplay">15</span>
         </div>
       </div>
 
-      <!-- Viñeta clínica sin desvelar diagnóstico (pistas contextuales) -->
+      <!-- Viñeta clínica sin desvelar diagnóstico (título neutral) -->
       <div class="bg-amber-50/90 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-900/40 rounded-2xl p-4 shadow-sm">
         <div class="flex items-center justify-between cursor-pointer" onclick="toggleVignetteView()">
           <div class="flex items-center space-x-2 text-amber-950 dark:text-amber-300 font-extrabold text-xs uppercase tracking-wide">
             <svg class="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <span id="examVignetteTitle">Historia Clínica de Urgencias</span>
+            <span id="examVignetteTitle">Caso Clínico nº 1</span>
           </div>
           <span id="vignetteToggleBtnLabel" class="text-[11px] text-amber-800 dark:text-amber-400 font-semibold underline">Ocultar datos</span>
         </div>
@@ -477,8 +477,7 @@
       // 1. SCA / IAM DE VENTRÍCULO DERECHO / SHOCK CARDIOGÉNICO
       {
         topic: "CARDIO",
-        clue: "Dolor centrotorácico agudo con inestabilidad hemodinámica",
-        generate: function() {
+        generate: function(caseNumber = 1) {
           const gender = randomChoice(["M", "F"]);
           const age = gender === "M" ? randomInt(58, 79) : randomInt(64, 82);
           const name = `${gender === "M" ? "Varón" : "Mujer"} de ${age} años`;
@@ -489,8 +488,8 @@
           const hr = randomInt(40, 49);
           const id = "MUE-" + randomInt(1100, 9990);
 
-          // TÍTULO CON PISTAS (SIN DECIR A QUÉ PERTENECE)
-          const title = `Caso Clínico #${id}: Paciente de ${age} años con dolor centrotorácico agudo e hipotensión`;
+          // TÍTULO NEUTRAL SIN DESVELAR DATOS CLÍNICOS
+          const title = `Caso Clínico nº ${caseNumber}`;
           const vignette = `${name}, ${hta}. Acude a Urgencias trasladado en UME por dolor centrotorácico opresivo de ${minutes} minutos de evolución, irradiado a epigastrio y cuello, acompañado de cortejo vegetativo profuso con náuseas intensas. A la exploración física en el Box de Reanimación: TA ${pas}/${pad} mmHg, FC ${hr} lpm rítmica, FR 20 rpm, SatO2 96% con aire ambiente. Piel fría, pálida y sudorosa. Ingurgitación yugular evidente a 45º sin soplos carotídeos. Auscultación cardiaca: tonos rítmicos sin soplos. Auscultación pulmonar: murmullo vesicular conservado bilateralmente, completamente limpio sin estertores crepitantes en ningún campo. ECG de 12 derivaciones inicial: elevación del segmento ST de 2,5 mm en II, III y aVF con descenso especular del ST en derivaciones I y aVL.`;
 
           const questions = [
@@ -698,8 +697,7 @@
       // 2. SEPSIS URINARIA OBSTRUCTIVA / SHOCK SÉPTICO
       {
         topic: "SEPSIS",
-        clue: "Fiebre, hipotensión, dolor en flanco y fracaso renal agudo",
-        generate: function() {
+        generate: function(caseNumber = 1) {
           const gender = randomChoice(["M", "F"]);
           const age = gender === "M" ? randomInt(66, 81) : randomInt(68, 85);
           const name = `${gender === "M" ? "Varón" : "Mujer"} de ${age} años`;
@@ -712,7 +710,7 @@
           const creat = (Math.random() * 0.9 + 2.1).toFixed(1);
           const id = "MUE-" + randomInt(1100, 9990);
 
-          const title = `Caso Clínico #${id}: Paciente de ${age} años con síndrome febril agudo, dolor lumbar e hipotensión`;
+          const title = `Caso Clínico nº ${caseNumber}`;
           const vignette = `${name}, diabético con antecedentes de litiasis renal derecha. Acude al Servicio de Urgencias por fiebre de hasta ${temp} ºC con escalofríos, dolor continuo en fosa lumbar derecha de 16 horas de evolución y vómitos alimentarios incoercibles. A la exploración física: TA ${pas}/${pad} mmHg, FC ${hr} lpm, FR ${rr} rpm, SatO2 93% basal, relleno capilar enlentecido (4 segundos), piel caliente con ligera sudoración, somnoliento pero reactivo a órdenes simples (Glasgow 14). Auscultación cardiopulmonar: taquicardia sinusal sin soplos, murmullo vesicular conservado sin ruidos sobreañadidos. Abdomen blando, no peritonítico, con dolor a la palpación profunda en flanco derecho y puñopercusión renal derecha intensamente positiva. Tira reactiva de orina urgente: leucocituria +++, nitritos positivos, microhematuria. Analítica urgente: Leucocitos 19.800/mm³ (22% cayados), Plaquetas 115.000/mm³, Creatinina ${creat} mg/dL (basal 0,9), Urea 88 mg/dL, Lactato arterial ${lact} mmol/L.`;
 
           const questions = [
@@ -920,8 +918,7 @@
       // 3. ICTUS ISQUÉMICO DEL DESPERTAR / GRAN VASO / CÓDIGO ICTUS
       {
         topic: "NEURO",
-        clue: "Déficit neurológico focal agudo al despertar con afasia y hemiplejia",
-        generate: function() {
+        generate: function(caseNumber = 1) {
           const gender = randomChoice(["M", "F"]);
           const age = gender === "M" ? randomInt(67, 80) : randomInt(70, 84);
           const name = `${gender === "M" ? "Varón" : "Mujer"} de ${age} años`;
@@ -930,7 +927,7 @@
           const nihss = randomInt(17, 21);
           const id = "MUE-" + randomInt(1100, 9990);
 
-          const title = `Caso Clínico #${id}: Paciente de ${age} años con déficit neurológico focal agudo detectado al despertar`;
+          const title = `Caso Clínico nº ${caseNumber}`;
           const vignette = `${name}, hipertenso con antecedentes de fibrilación auricular conocida no anticoagulada. Se acostó asintomático a las 23:45 h; al despertarse su familia a las 08:15 h lo encuentran con imposibilidad para emitir lenguaje y parálisis completa de miembros derechos. A la llegada del equipo de emergencias (08:35 h): TA ${pas}/${pad} mmHg, FC 94 lpm arrítmica, glucemia capilar 118 mg/dL. Exploración neurológica inicial: afasia global (incapacidad para comprender y emitir lenguaje), desviación conjugada oculocefálica hacia la izquierda, hemiplejia derecha facio-braquio-crural flácida e hipoestesia severa ipsilateral. Puntuación en la escala NIHSS: ${nihss} puntos.`;
 
           const questions = [
@@ -1138,8 +1135,7 @@
       // 4. TROMBOEMBOLISMO PULMONAR DE ALTO RIESGO / SHOCK OBSTRUCTIVO
       {
         topic: "RESP",
-        clue: "Disnea súbita, síncope, hipotensión refractaria e ingurgitación yugular",
-        generate: function() {
+        generate: function(caseNumber = 1) {
           const gender = randomChoice(["M", "F"]);
           const age = gender === "M" ? randomInt(52, 76) : randomInt(56, 80);
           const name = `${gender === "M" ? "Varón" : "Mujer"} de ${age} años`;
@@ -1155,7 +1151,7 @@
           const sat = randomInt(82, 87);
           const id = "MUE-" + randomInt(1100, 9990);
 
-          const title = `Caso Clínico #${id}: Paciente de ${age} años con disnea súbita e inestabilidad hemodinámica`;
+          const title = `Caso Clínico nº ${caseNumber}`;
           const vignette = `${name}, ${context}. Presenta disnea súbita e intensa en reposo seguida de síncope con recuperación incompleta en su domicilio. A la llegada de la UME y traslado al Box de Críticos: TA ${pas}/${pad} mmHg, FC ${hr} lpm rítmica, FR ${rr} rpm, SatO2 ${sat}% con aire ambiente. A la exploración física: paciente pálido, frío, sudoroso y angustiado. Ingurgitación yugular bilateral evidente hasta el ángulo mandibular a 45º. Auscultación cardiaca: taquicardia rítmica con refuerzo del segundo tono en foco pulmonar y ausencia de soplos. Auscultación pulmonar: murmullo vesicular conservado bilateralmente, completamente limpio sin estertores ni sibilancias. Extremidades sin edemas asimétricos marcados pero con frialdad distal. ECG: taquicardia sinusal a ${hr} lpm con patrón S1Q3T3 e inversión de ondas T en derivaciones precordiales derechas (V1 a V3).`;
 
           const questions = [
@@ -1436,13 +1432,12 @@
       if (examState.mode === 'single') {
         // MODO 1 CASO: 15 PREGUNTAS (25 MINUTOS)
         const arch = randomChoice(pool);
-        const generated = arch.generate();
+        const generated = arch.generate(1);
 
         examState.caseMetadata.push({
           id: generated.id,
           title: generated.title,
-          vignette: generated.vignette,
-          clue: generated.clue
+          vignette: generated.vignette
         });
 
         examState.questions = generated.questions.map((q, idx) => {
@@ -1455,10 +1450,10 @@
             options: shuffledOptions,
             correct: newCorrectIndex,
             caseId: generated.id,
+            caseNum: 1,
             caseTitle: generated.title,
             caseVignette: generated.vignette,
-            caseClue: generated.clue,
-            badgeLabel: `CASO #${generated.id}`,
+            badgeLabel: "CASO 1",
             questionGlobalIndex: idx
           };
         });
@@ -1470,12 +1465,12 @@
         let globalCounter = 0;
 
         selectedArchetypes.forEach((arch, archIdx) => {
-          const generated = arch.generate();
+          const caseNumber = archIdx + 1;
+          const generated = arch.generate(caseNumber);
           examState.caseMetadata.push({
             id: generated.id,
             title: generated.title,
-            vignette: generated.vignette,
-            clue: generated.clue
+            vignette: generated.vignette
           });
 
           generated.questions.forEach((q) => {
@@ -1488,10 +1483,10 @@
               options: shuffledOptions,
               correct: newCorrectIndex,
               caseId: generated.id,
+              caseNum: caseNumber,
               caseTitle: generated.title,
               caseVignette: generated.vignette,
-              caseClue: generated.clue,
-              badgeLabel: `CASO ${archIdx + 1}/3 (#${generated.id})`,
+              badgeLabel: `CASO ${caseNumber}/3`,
               questionGlobalIndex: globalCounter++
             });
           });
@@ -1556,9 +1551,9 @@
       if (!q) return;
 
       document.getElementById('examCaseBadge').textContent = q.badgeLabel;
-      document.getElementById('examCaseClueTag').textContent = q.caseClue;
+      document.getElementById('examCaseClueTag').textContent = "Atención Médica de Urgencias";
       document.getElementById('currentQuestionNumDisplay').textContent = examState.currentIndex + 1;
-      document.getElementById('examVignetteTitle').textContent = q.caseTitle;
+      document.getElementById('examVignetteTitle').textContent = `Caso Clínico nº ${q.caseNum}`;
       document.getElementById('examVignetteText').textContent = q.caseVignette;
       document.getElementById('examQuestionTitle').textContent = `${examState.currentIndex + 1}. ${q.text}`;
 
@@ -1939,7 +1934,7 @@
       if (examState.caseMetadata.length > 0) {
         doc.setFont("helvetica", "bold");
         doc.setFontSize(10);
-        doc.text("VIÑETA CLÍNICA DEL CASO:", 14, y);
+        doc.text("CASO CLÍNICO Nº 1:", 14, y);
         y += 5;
 
         doc.setFont("helvetica", "normal");
