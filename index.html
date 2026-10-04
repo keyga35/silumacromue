@@ -4,12 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#0f172a">
-  <title>Simulador Oficial MUE 2026 - Generador de Casos Aleatorios</title>
+  <title>Simulador Oficial MUE 2026 - Medicina de Urgencias y Emergencias</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
   <!-- jsPDF para exportación a PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -20,8 +18,8 @@
         extend: {
           colors: {
             mue: {
-              50: '#f0fdf4',
-              100: '#dcfce7',
+              50: '#ecfdf5',
+              100: '#d1fae5',
               500: '#10b981',
               600: '#059669',
               700: '#047857',
@@ -64,35 +62,49 @@
       to { opacity: 1; transform: translateY(0); }
     }
     .animate-fade-in {
-      animation: fadeIn 0.22s ease-out forwards;
+      animation: fadeIn 0.2s ease-out forwards;
     }
   </style>
 </head>
+
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-full flex flex-col font-sans transition-colors duration-200">
 
-  <!-- CABECERA FIJA -->
-  <header class="bg-slate-900 text-white sticky top-0 z-40 border-b border-slate-800 shadow-sm">
-    <div class="max-w-3xl mx-auto px-3.5 h-14 flex items-center justify-between">
-      <div class="flex items-center space-x-2.5 cursor-pointer" onclick="goToHomePrompt()">
-        <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center font-black text-white text-xs shadow-md">
+  <!-- CABECERA SUPERIOR FIJA CON BOTÓN ALEATORIO DIRECTO -->
+  <header class="bg-slate-900 text-white sticky top-0 z-40 border-b border-slate-800 shadow-md">
+    <div class="max-w-4xl mx-auto px-3.5 h-14 flex items-center justify-between gap-2">
+      
+      <!-- Logo y Título -->
+      <div class="flex items-center space-x-2.5 cursor-pointer min-w-0" onclick="handleHeaderHomeClick()">
+        <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center font-black text-white text-xs shadow-md shrink-0">
           MUE
         </div>
-        <div>
-          <h1 class="font-extrabold text-sm leading-tight tracking-tight flex items-center gap-1.5">
-            <span>Simulador 2026</span>
-            <span class="text-[10px] bg-slate-800 text-emerald-400 px-1.5 py-0.5 rounded font-mono font-bold">15 PREG</span>
+        <div class="min-w-0">
+          <h1 class="font-extrabold text-xs sm:text-sm leading-tight tracking-tight flex items-center gap-1.5 truncate">
+            <span>Simulador MUE 2026</span>
+            <span class="text-[9px] bg-slate-800 text-emerald-400 px-1.5 py-0.5 rounded font-mono font-bold shrink-0">15 PREG</span>
           </h1>
-          <p class="text-[10px] text-slate-400">Especialidad Urgencias y Emergencias</p>
+          <p class="text-[10px] text-slate-400 truncate">Orden PJC/311/2026</p>
         </div>
       </div>
 
-      <div class="flex items-center space-x-2">
-        <div id="topTimerBox" class="hidden items-center space-x-1.5 bg-slate-800/90 border border-slate-700/80 px-2.5 py-1 rounded-full text-xs font-mono font-bold text-amber-300">
+      <!-- Botón Superior Aleatorio y Controles -->
+      <div class="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
+        
+        <!-- BOTÓN ALEATORIO EN LA PARTE SUPERIOR -->
+        <button onclick="promptRandomGeneration()" title="Generar Caso Aleatorio Inédito" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-bold px-2.5 sm:px-3 py-1.5 rounded-xl shadow flex items-center gap-1.5 transition border border-emerald-400/30">
+          <span class="text-sm">🎲</span>
+          <span class="hidden xs:inline sm:inline text-[11px] uppercase tracking-wider font-extrabold">Aleatorio</span>
+        </button>
+
+        <!-- Cronómetro Superior -->
+        <div id="topTimerBox" class="hidden items-center space-x-1.5 bg-slate-800/90 border border-slate-700/80 px-2.5 py-1 rounded-xl text-xs font-mono font-bold text-amber-300">
           <svg class="w-3.5 h-3.5 text-amber-400 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span id="topTimerText">25:00</span>
         </div>
+
+        <!-- Modo Oscuro/Claro -->
         <button onclick="toggleDarkMode()" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition" aria-label="Cambiar tema">
           <svg id="themeSun" class="w-4 h-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -102,101 +114,101 @@
           </svg>
         </button>
       </div>
+
     </div>
   </header>
 
-  <!-- CUERPO PRINCIPAL -->
-  <main class="flex-1 max-w-3xl w-full mx-auto p-3.5 md:p-5 flex flex-col justify-start">
+  <main class="flex-1 max-w-4xl w-full mx-auto p-3.5 sm:p-5 flex flex-col justify-start">
     
-    <!-- PANTALLA 1: INICIO Y GENERACIÓN DINÁMICA -->
-    <section id="screenHome" class="space-y-4 my-auto py-2 animate-fade-in">
+    <!-- PANTALLA 1: MENÚ DE CONFIGURACIÓN Y GENERACIÓN PROCEDURAL -->
+    <section id="screenHome" class="space-y-4 py-2 animate-fade-in my-auto">
       
+      <!-- Banner Informativo Oficial -->
       <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">
         <div class="flex items-start justify-between gap-3">
           <div>
-            <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 mb-2">
+            <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 mb-2">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-              <span>Motor Generativo · Sin Repetición</span>
+              <span>Motor Clínico Procedural · Sin Enunciados Obvios</span>
             </div>
-            <h2 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white leading-tight">
-              Generador de Casos Prácticos MUE
+            <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-tight">
+              Simulador de Casos Prácticos MUE
             </h2>
           </div>
-          <span class="text-3xl p-2 bg-slate-50 dark:bg-slate-800 rounded-2xl">🎲</span>
+          <span class="text-3xl p-2.5 bg-slate-50 dark:bg-slate-800 rounded-2xl shrink-0">🏥</span>
         </div>
 
-        <p class="text-xs md:text-sm text-slate-600 dark:text-slate-300 mt-2.5 leading-relaxed text-selectable">
-          Simulacro oficial de <strong>15 preguntas consecutivas</strong> según la Orden PJC/311/2026. <strong>Cada caso se genera dinámicamente</strong> combinando perfiles, constantes vitales y opciones barajadas en cada intento.
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-2.5 leading-relaxed text-selectable">
+          Simulación idéntica al examen de acceso extraordinario a la especialidad de <strong>Medicina de Urgencias y Emergencias (12/12/2026)</strong>. Los casos se generan aleatoriamente modificando edades, antecedentes, constantes vitales y analíticas. El enunciado clínico ofrece pistas diagnósticas <em>sin desvelar la patología</em>.
         </p>
 
+        <!-- Puntuación Oficial -->
         <div class="mt-4 grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 text-center">
           <div>
             <span class="block text-[10px] uppercase font-bold text-slate-400">Acierto</span>
-            <span class="text-sm font-black text-emerald-600 dark:text-emerald-400">+1,00 pt</span>
+            <span class="text-xs sm:text-sm font-black text-emerald-600 dark:text-emerald-400">+1,00 pt</span>
           </div>
           <div>
             <span class="block text-[10px] uppercase font-bold text-slate-400">Fallo</span>
-            <span class="text-sm font-black text-rose-600 dark:text-rose-400">-0,25 pt</span>
+            <span class="text-xs sm:text-sm font-black text-rose-600 dark:text-rose-400">-0,25 pt</span>
           </div>
           <div>
             <span class="block text-[10px] uppercase font-bold text-slate-400">Blanco</span>
-            <span class="text-sm font-black text-slate-500">0,00 pt</span>
+            <span class="text-xs sm:text-sm font-black text-slate-500">0,00 pt</span>
           </div>
         </div>
 
-        <div class="mt-2 text-[11px] text-center text-slate-500 dark:text-slate-400 font-medium">
-          Criterio Oficial: <strong>≥ 5,00 puntos</strong> por caso para ser Apto (y <strong>≥ 20,00</strong> en 3 casos).
+        <div class="mt-2.5 text-[11px] text-center text-slate-500 dark:text-slate-400 font-medium">
+          Criterio de Aprobado Oficial: <strong>≥ 5,00 puntos</strong> en el caso (y <strong>≥ 20,00 puntos</strong> en el examen completo de 3 casos).
         </div>
       </div>
 
+      <!-- Panel de Lanzamiento de Examen -->
       <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
         
-        <!-- BOTÓN PRINCIPAL DE GENERACIÓN ALEATORIA -->
-        <button onclick="generateRandomFreshExam()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 active:scale-[0.99] text-white font-black py-4 px-4 rounded-xl shadow-lg transition flex items-center justify-center space-x-2.5 text-sm md:text-base border border-emerald-500/30">
-          <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <!-- BOTÓN PRINCIPAL: NUEVO CASO ALEATORIO -->
+        <button onclick="startFreshRandomExam()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.99] text-white font-black py-4 px-4 rounded-xl shadow-lg transition flex items-center justify-center space-x-2.5 text-sm sm:text-base border border-emerald-400/30">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
-          <span>🎲 GENERAR NUEVO CASO ALEATORIO (15 PREG)</span>
+          <span>🎲 GENERAR CASO PRÁCTICO INÉDITO (15 PREGUNTAS)</span>
         </button>
 
-        <div class="relative flex py-1 items-center">
-          <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
-          <span class="flex-shrink mx-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">o elige área del temario</span>
-          <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
-        </div>
-
-        <!-- Filtro opcional por bloque de temario -->
-        <div class="space-y-1.5">
+        <!-- Filtro Opcional de Área del Temario -->
+        <div class="space-y-1.5 pt-1">
           <label class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between">
-            <span>Filtro de Especialidad / Bloque:</span>
-            <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold">Áreas clínicas oficiales</span>
+            <span>Orientación Clínica de la Guardia:</span>
+            <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold">100% Temario Oficial</span>
           </label>
-          <select id="curriculumAreaSelect" class="w-full text-xs md:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-3 font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            <option value="ALL">🎲 Cualquier área del temario (Máxima aleatoriedad)</option>
-            <option value="CARDIO">🫀 Cardiovascular y Arritmias (IAM, EAP, Shock, Aorta)</option>
-            <option value="RESP">🫁 Respiratorio Crítico (TEP, Asma de Riesgo Vital, EPOC)</option>
-            <option value="SEPSIS">🦠 Sepsis, Infecciones y Fallo Renal (Urosepsis, Obstrucción)</option>
-            <option value="NEURO">🧠 Neurología Urgente (Código Ictus, Wake-Up, HSA)</option>
-            <option value="TRAUMA">🩸 Politrauma y Reanimación (Shock Hemorrágico, Tórax)</option>
+          <select id="curriculumAreaSelect" class="w-full text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-3 font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <option value="ALL">🎲 Totalmente Aleatorio (Cualquier área del POE MUE 2026)</option>
+            <option value="CARDIO">🫀 Patología Cardiovascular y Hemodinámica Urgente</option>
+            <option value="RESP">🫁 Soporte Respiratorio Crítico e Insuficiencia Aguda</option>
+            <option value="SEPSIS">🦠 Sepsis, Infección Grave y Nefrourología Urgente</option>
+            <option value="NEURO">🧠 Neurología Urgente, Códigos y Patología Vascular Cerebral</option>
+            <option value="TRAUMA">🩸 Politraumatismo, Manejo de Hemorragias y TCE</option>
+            <option value="TOXIC">🧪 Toxicología, Antídotos y Sobredosis Agudas</option>
+            <option value="ANAF">💉 Anafilaxia, Vía Aérea Inminente y Dermatología Sistémica</option>
+            <option value="METAB">🧪 Urgencias Metabólicas, Cetoacidosis y Alteraciones Electrolíticas</option>
           </select>
         </div>
 
-        <!-- Modos: Caso individual (25 min) vs Examen 3 Casos (90 min) -->
+        <!-- Selección de Modo: 1 Caso (25 min) vs Examen Completo (90 min) -->
         <div class="grid grid-cols-2 gap-2.5 pt-1">
           <label class="flex flex-col p-3 rounded-xl border-2 border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/20 cursor-pointer">
             <div class="flex items-center justify-between mb-1">
               <span class="text-xs font-extrabold text-emerald-900 dark:text-emerald-300">1 Caso Práctico</span>
-              <input type="radio" name="examModeRadio" value="single" checked onchange="onModeChange(this.value)" class="text-emerald-600 focus:ring-emerald-500">
+              <input type="radio" name="examModeRadio" value="single" checked onchange="handleModeChange(this.value)" class="text-emerald-600 focus:ring-emerald-500">
             </div>
-            <span class="text-[11px] text-slate-500 dark:text-slate-400">15 preg · 25 minutos. Apto ≥ 5 pts.</span>
+            <span class="text-[11px] text-slate-500 dark:text-slate-400">15 preguntas · 25 minutos. Apto ≥ 5 pts.</span>
           </label>
 
-          <label class="flex flex-col p-3 rounded-xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 cursor-pointer hover:border-slate-300">
+          <label class="flex flex-col p-3 rounded-xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 cursor-pointer hover:border-slate-300 dark:hover:border-slate-700">
             <div class="flex items-center justify-between mb-1">
               <span class="text-xs font-extrabold text-slate-800 dark:text-slate-200">Examen Completo</span>
-              <input type="radio" name="examModeRadio" value="triad" onchange="onModeChange(this.value)" class="text-emerald-600 focus:ring-emerald-500">
+              <input type="radio" name="examModeRadio" value="triad" onchange="handleModeChange(this.value)" class="text-emerald-600 focus:ring-emerald-500">
             </div>
-            <span class="text-[11px] text-slate-500 dark:text-slate-400">45 preg · 90 min (3 casos). Apto ≥ 20 pts.</span>
+            <span class="text-[11px] text-slate-500 dark:text-slate-400">45 preguntas · 90 minutos (3 casos). Apto ≥ 20 pts.</span>
           </label>
         </div>
 
@@ -207,60 +219,62 @@
     <!-- PANTALLA 2: EXAMEN EN CURSO -->
     <section id="screenExam" class="hidden flex-col flex-1 space-y-3 animate-fade-in">
       
+      <!-- Barra superior de estado del caso -->
       <div class="bg-white dark:bg-slate-900 rounded-xl px-4 py-2.5 shadow-sm border border-slate-200 dark:border-slate-800 flex items-center justify-between">
         <div class="flex items-center space-x-2 truncate">
-          <span id="examCaseBadge" class="bg-slate-900 dark:bg-slate-800 text-emerald-400 text-[11px] font-black px-2 py-0.5 rounded font-mono">CASO 1</span>
-          <span id="examCaseCategory" class="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">Cardiovascular</span>
+          <span id="examCaseBadge" class="bg-slate-900 dark:bg-slate-800 text-emerald-400 text-[11px] font-black px-2 py-0.5 rounded font-mono">CASO #</span>
+          <span id="examCaseClueTag" class="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">Atención Médica Urgente</span>
         </div>
-        <div class="text-xs font-bold text-slate-500">
+        <div class="text-xs font-bold text-slate-500 shrink-0">
           Pregunta <span id="currentQuestionNumDisplay" class="text-slate-900 dark:text-white font-black text-sm">1</span>/<span id="totalQuestionsDisplay">15</span>
         </div>
       </div>
 
-      <!-- Viñeta clínica del caso generado -->
-      <div class="bg-amber-50/90 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-900/40 rounded-2xl p-3.5 shadow-sm">
-        <div class="flex items-center justify-between cursor-pointer" onclick="toggleVignetteCollapse()">
+      <!-- Viñeta clínica sin desvelar diagnóstico (pistas contextuales) -->
+      <div class="bg-amber-50/90 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-900/40 rounded-2xl p-4 shadow-sm">
+        <div class="flex items-center justify-between cursor-pointer" onclick="toggleVignetteView()">
           <div class="flex items-center space-x-2 text-amber-950 dark:text-amber-300 font-extrabold text-xs uppercase tracking-wide">
             <svg class="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <span id="examVignetteTitle">Caso Clínico: Enunciado</span>
+            <span id="examVignetteTitle">Historia Clínica de Urgencias</span>
           </div>
-          <span id="vignetteToggleLabel" class="text-[11px] text-amber-800 dark:text-amber-400 font-semibold underline">Ocultar texto</span>
+          <span id="vignetteToggleBtnLabel" class="text-[11px] text-amber-800 dark:text-amber-400 font-semibold underline">Ocultar datos</span>
         </div>
-        <div id="examVignetteBody" class="mt-2 text-xs md:text-sm text-slate-800 dark:text-slate-200 font-serif leading-relaxed max-h-48 overflow-y-auto pr-1 text-selectable">
-          <!-- Texto de la viñeta -->
+        <div id="examVignetteText" class="mt-2.5 text-xs sm:text-sm text-slate-800 dark:text-slate-200 font-serif leading-relaxed max-h-56 overflow-y-auto pr-1 text-selectable">
+          <!-- Texto de la viñeta clínica aleatorizada -->
         </div>
       </div>
 
       <!-- Tarjeta de pregunta y opciones A-B-C-D -->
-      <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-6 shadow-sm border border-slate-200 dark:border-slate-800 flex-1 flex flex-col justify-between space-y-4">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200 dark:border-slate-800 flex-1 flex flex-col justify-between space-y-4">
         <div>
-          <h3 id="examQuestionText" class="text-sm md:text-base font-bold text-slate-900 dark:text-white leading-snug text-selectable">
+          <h3 id="examQuestionTitle" class="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug text-selectable">
             <!-- Enunciado de la pregunta -->
           </h3>
           <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1 italic">
             Selecciona una opción (+1 pt acierto / -0,25 pt fallo):
           </p>
 
-          <div id="examOptionsList" class="mt-3.5 space-y-2.5">
-            <!-- Generadas dinámicamente -->
+          <div id="examOptionsContainer" class="mt-3.5 space-y-2.5">
+            <!-- Opciones generadas dinámicamente -->
           </div>
         </div>
 
+        <!-- Controles de navegación de preguntas -->
         <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
-          <button onclick="goToPreviousQuestion()" id="btnPrevQuestion" class="px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1">
+          <button onclick="navigateQuestion(-1)" id="btnPrevQuestion" class="px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
             <span>Anterior</span>
           </button>
 
-          <button onclick="markQuestionBlank()" class="text-[11px] font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 underline">
+          <button onclick="clearCurrentAnswer()" class="text-[11px] font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 underline">
             Dejar en Blanco
           </button>
 
-          <button onclick="goToNextQuestion()" id="btnNextQuestion" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition flex items-center gap-1 shadow-sm">
+          <button onclick="navigateQuestion(1)" id="btnNextQuestion" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition flex items-center gap-1 shadow-sm">
             <span>Siguiente</span>
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -269,17 +283,19 @@
         </div>
       </div>
 
+      <!-- Paleta visual de 15 preguntas con selector rápido -->
       <div class="bg-white dark:bg-slate-900 rounded-xl p-3 shadow-sm border border-slate-200 dark:border-slate-800 space-y-2">
         <div class="flex items-center justify-between text-[11px]">
           <span class="font-bold uppercase text-slate-400">Navegador de Preguntas</span>
-          <span id="answeredTallyText" class="font-bold text-emerald-600 dark:text-emerald-400">0/15 contestadas</span>
+          <span id="answeredSummaryDisplay" class="font-bold text-emerald-600 dark:text-emerald-400">0/15 contestadas</span>
         </div>
-        <div id="examPaletteGrid" class="grid grid-cols-5 sm:grid-cols-15 gap-1.5">
-          <!-- Botones 1 al 15 inyectados -->
+        <div id="examPaletteButtons" class="grid grid-cols-5 sm:grid-cols-15 gap-1.5">
+          <!-- Inyectados por JavaScript -->
         </div>
       </div>
 
-      <button onclick="openConfirmSubmitModal()" class="w-full bg-slate-900 hover:bg-black dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white font-extrabold py-3.5 rounded-xl shadow-md transition flex items-center justify-center space-x-2 text-sm">
+      <!-- Botón de entrega y evaluación -->
+      <button onclick="confirmSubmitModal()" class="w-full bg-slate-900 hover:bg-black dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-extrabold py-3.5 rounded-xl shadow-md transition flex items-center justify-center space-x-2 text-sm">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
@@ -288,13 +304,15 @@
 
     </section>
 
-    <!-- PANTALLA 3: RESULTADOS Y FÓRMULAS DE FIJACIÓN -->
+    <!-- PANTALLA 3: RESULTADOS, CORRECCIÓN Y FÓRMULAS DE MEMORIZACIÓN -->
     <section id="screenResults" class="hidden space-y-4 py-2 animate-fade-in">
       
-      <div id="resultsVerdictBanner" class="rounded-2xl p-5 shadow-sm border flex flex-col md:flex-row items-center justify-between gap-4">
-        <!-- Generado en JS -->
+      <!-- Banner de Veredicto Oficial (Apto / No Apto) -->
+      <div id="resultsVerdictCard" class="rounded-2xl p-5 shadow-sm border flex flex-col md:flex-row items-center justify-between gap-4">
+        <!-- Renderizado dinámico -->
       </div>
 
+      <!-- Estadísticas de Puntuación según Baremo Oficial -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         <div class="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 text-center shadow-sm">
           <span class="text-[10px] font-bold uppercase text-slate-400">Puntos Netos</span>
@@ -304,12 +322,12 @@
         <div class="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 text-center shadow-sm">
           <span class="text-[10px] font-bold uppercase text-emerald-500">Aciertos (+1)</span>
           <div id="statCorrectCount" class="text-2xl font-black text-emerald-600 dark:text-emerald-400">0</div>
-          <span id="statCorrectPercent" class="text-[10px] text-slate-500">0%</span>
+          <span id="statCorrectPercent" class="text-[10px] text-slate-500">0% acierto</span>
         </div>
         <div class="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 text-center shadow-sm">
           <span class="text-[10px] font-bold uppercase text-rose-500">Fallos (-0.25)</span>
           <div id="statWrongCount" class="text-2xl font-black text-rose-600 dark:text-rose-400">0</div>
-          <span id="statPenaltyDeduction" class="text-[10px] text-rose-500">-0.00 pts</span>
+          <span id="statPenaltyScore" class="text-[10px] text-rose-500">-0.00 pts</span>
         </div>
         <div class="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 text-center shadow-sm">
           <span class="text-[10px] font-bold uppercase text-slate-400">En Blanco (0)</span>
@@ -318,16 +336,16 @@
         </div>
       </div>
 
-      <!-- BOTONES DE ACCIÓN POST-EXAMEN (GENERAR OTRO + DESCARGAR PDF) -->
+      <!-- BOTONES DE ACCIÓN: GENERAR NUEVO CASO ALEATORIO + DESCARGAR PDF -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div class="bg-gradient-to-r from-emerald-700 to-teal-800 rounded-2xl p-4 text-white shadow-md flex items-center justify-between">
           <div class="space-y-0.5">
-            <div class="font-black text-xs md:text-sm flex items-center">
-              <span>✨ Generar Caso Inédito</span>
+            <div class="font-black text-xs sm:text-sm flex items-center gap-1">
+              <span>🎲 Generar Caso Inédito</span>
             </div>
-            <p class="text-[11px] text-emerald-100">Nueva viñeta y preguntas.</p>
+            <p class="text-[11px] text-emerald-100">Nuevos datos clínicos y preguntas.</p>
           </div>
-          <button onclick="generateRandomFreshExam()" class="bg-white text-emerald-950 font-black px-3.5 py-2 rounded-xl shadow text-xs hover:bg-emerald-50 transition whitespace-nowrap flex items-center gap-1">
+          <button onclick="startFreshRandomExam()" class="bg-white text-emerald-950 font-black px-3.5 py-2 rounded-xl shadow text-xs hover:bg-emerald-50 transition whitespace-nowrap flex items-center gap-1 active:scale-95">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
@@ -337,43 +355,46 @@
 
         <div class="bg-gradient-to-r from-blue-700 to-indigo-800 rounded-2xl p-4 text-white shadow-md flex items-center justify-between">
           <div class="space-y-0.5">
-            <div class="font-black text-xs md:text-sm flex items-center">
-              <span>📄 Exportar a PDF</span>
+            <div class="font-black text-xs sm:text-sm flex items-center gap-1">
+              <span>📄 Descargar en PDF</span>
             </div>
-            <p class="text-[11px] text-blue-100">Guarda el caso y fórmulas.</p>
+            <p class="text-[11px] text-blue-100">Guarda el caso y fórmulas de fijación.</p>
           </div>
-          <button onclick="exportExamPDF()" class="bg-white text-blue-950 font-black px-3.5 py-2 rounded-xl shadow text-xs hover:bg-blue-50 transition whitespace-nowrap flex items-center gap-1">
+          <button onclick="downloadExamAsPDF()" class="bg-white text-blue-950 font-black px-3.5 py-2 rounded-xl shadow text-xs hover:bg-blue-50 transition whitespace-nowrap flex items-center gap-1 active:scale-95">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
-            <span>PDF</span>
+            <span>Descargar PDF</span>
           </button>
         </div>
       </div>
 
+      <!-- Filtro de Revisión: Todas vs Solo Falladas -->
       <div class="flex items-center justify-between pt-1">
-        <h3 class="font-black text-sm md:text-base text-slate-900 dark:text-white flex items-center gap-1.5">
-          <svg class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <h3 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
           </svg>
-          <span>Corrección y Fórmulas de Fijación</span>
+          <span>Corrección Detallada y Reglas Mnemotécnicas</span>
         </h3>
-        <div class="flex space-x-1">
-          <button onclick="setReviewFilter('all')" id="btnFilterAll" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-900 text-white">Todas</button>
-          <button onclick="setReviewFilter('failed')" id="btnFilterFailed" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">Falladas</button>
+        <div class="flex space-x-1 shrink-0">
+          <button onclick="setResultsFilter('all')" id="btnFilterReviewAll" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-900 dark:bg-slate-700 text-white">Todas</button>
+          <button onclick="setResultsFilter('failed')" id="btnFilterReviewFailed" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">Falladas</button>
         </div>
       </div>
 
-      <div id="resultsDetailedList" class="space-y-4">
-        <!-- Renderizado dinámicamente -->
+      <!-- Contenedor de Correcciones con Fórmulas de Fijación -->
+      <div id="resultsDetailedQuestionsList" class="space-y-4">
+        <!-- Renderizado dinámico -->
       </div>
 
+      <!-- Botón de Retorno al Menú Principal -->
       <div class="pt-3 pb-8">
-        <button onclick="returnToStartScreen()" class="w-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold py-3 rounded-xl transition text-xs md:text-sm flex items-center justify-center gap-1.5">
+        <button onclick="backToMainHome()" class="w-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold py-3 rounded-xl transition text-xs sm:text-sm flex items-center justify-center gap-1.5">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
           </svg>
-          <span>Volver al Menú Principal</span>
+          <span>Volver al Menú Inicial</span>
         </button>
       </div>
 
@@ -381,8 +402,8 @@
 
   </main>
 
-  <!-- MODAL DE CONFIRMACIÓN -->
-  <div id="modalConfirmSubmit" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <!-- MODAL DE CONFIRMACIÓN DE ENTREGA -->
+  <div id="modalSubmitConfirmation" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-5 space-y-3.5 shadow-xl border border-slate-200 dark:border-slate-800">
       <div class="flex items-center space-x-2 text-amber-600 dark:text-amber-400">
         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -391,14 +412,35 @@
         <h4 class="font-black text-slate-900 dark:text-white text-base">¿Entregar el caso?</h4>
       </div>
       <p id="modalSubmitStatsSummary" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-        Has respondido 0 de 15 preguntas. Recuerda que las preguntas no respondidas computan 0, pero cada fallo penaliza con -0,25 puntos.
+        Has respondido 0 de 15 preguntas. Recuerda: acierto = +1,00 | fallo = -0,25 | blanco = 0,00.
       </p>
       <div class="flex space-x-2 pt-1">
-        <button onclick="closeConfirmModal()" class="flex-1 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-800">
+        <button onclick="closeSubmitModal()" class="flex-1 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-800">
           Revisar más
         </button>
-        <button onclick="finalizeAndEvaluateExam()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md">
+        <button onclick="finishAndEvaluateCurrentExam()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md">
           Sí, Corregir
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIRMACIÓN PARA SALIR / NUEVO ALEATORIO SI HAY EXAMEN ACTIVO -->
+  <div id="modalRandomConfirm" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-5 space-y-3.5 shadow-xl border border-slate-200 dark:border-slate-800">
+      <div class="flex items-center space-x-2 text-emerald-600 dark:text-emerald-400">
+        <span class="text-2xl">🎲</span>
+        <h4 class="font-black text-slate-900 dark:text-white text-base">Nuevo Caso Aleatorio</h4>
+      </div>
+      <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+        Hay un examen en curso. Si generas un nuevo caso aleatorio ahora, se perderán las respuestas actuales. ¿Deseas generar uno nuevo?
+      </p>
+      <div class="flex space-x-2 pt-1">
+        <button onclick="closeRandomModal()" class="flex-1 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-800">
+          Continuar examen
+        </button>
+        <button onclick="forceStartFreshRandomExam()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md">
+          Generar nuevo
         </button>
       </div>
     </div>
@@ -406,564 +448,598 @@
 
   <script>
     /* ==============================================================
-       MOTOR DE GENERACIÓN PROCEDURAL DE CASOS Y PREGUNTAS MUE
-       Basado en el Programa Formativo Oficial BOE-A-2026-7635
+       MOTOR GENERADOR PROCEDURAL CLÍNICO (POE MUE 2026 - BOE)
+       Genera variabilidad en parámetros biológicos, signos vitales,
+       tiempos y distractores. No expone el diagnóstico en el título.
        ============================================================== */
 
-    const ARCHETYPES = [
+    // Helper utilitario para selecciones aleatorias
+    function randomChoice(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // CATÁLOGO DE ARQUETIPOS CLÍNICOS DEL TEMARIO OFICIAL
+    const CLINICAL_ARCHETYPES = [
+      
+      // 1. SCA / IAM DE VENTRÍCULO DERECHO / SHOCK CARDIOGÉNICO
       {
-        code: "SCA_VD",
-        category: "Cardiovascular y Hemodinámica",
         topic: "CARDIO",
-        generator: function() {
-          const names = ["Mujer de 67 años", "Varón de 71 años", "Mujer de 74 años", "Varón de 64 años"];
-          const history = ["hipertensa y dislipémica en tratamiento con enalapril", "fumador con antecedentes de cardiopatía isquémica", "con diabetes tipo 2 y obesidad grado I"];
-          const timeOnset = Math.floor(Math.random() * 45) + 35; 
-          const pas = Math.floor(Math.random() * 14) + 78; 
-          const pad = Math.floor(Math.random() * 10) + 48; 
-          const fc = Math.floor(Math.random() * 10) + 38; 
-          const id = "MUE-" + Math.floor(1000 + Math.random() * 9000);
+        clue: "Dolor centrotorácico agudo con inestabilidad hemodinámica",
+        generate: function() {
+          const gender = randomChoice(["M", "F"]);
+          const age = gender === "M" ? randomInt(58, 79) : randomInt(64, 82);
+          const name = `${gender === "M" ? "Varón" : "Mujer"} de ${age} años`;
+          const hta = randomChoice(["hipertensa", "con HTA de larga data y dislipemia", "fumador con antecedentes de cardiopatía"]);
+          const minutes = randomInt(40, 85);
+          const pas = randomInt(76, 88);
+          const pad = randomInt(46, 56);
+          const hr = randomInt(40, 49);
+          const id = "MUE-" + randomInt(1100, 9990);
 
-          const title = `Caso ${id}: Síndrome Coronario Agudo con Hipotensión y Afectación de Ventrículo Derecho`;
-          const vignette = `${names[Math.floor(Math.random()*names.length)]}, ${history[Math.floor(Math.random()*history.length)]}. Acude al Servicio de Urgencias por dolor centrotorácico opresivo de ${timeOnset} minutos de evolución, irradiado a epigastrio y mandíbula, con náuseas intensas y sudoración profusa. A su llegada: TA ${pas}/${pad} mmHg, FC ${fc} lpm rítmica, SatO2 95% basal, piel fría y sudorosa, ingurgitación yugular evidente a 45º y auscultación pulmonar limpia bilateral sin estertores crepitantes. ECG de 12 derivaciones inicial: elevación del segmento ST de 2,5 mm en II, III y aVF con descenso especular en I y aVL.`;
+          // TÍTULO CON PISTAS (SIN DECIR A QUÉ PERTENECE)
+          const title = `Caso Clínico #${id}: Paciente de ${age} años con dolor centrotorácico agudo e hipotensión`;
+          const vignette = `${name}, ${hta}. Acude a Urgencias trasladado en UME por dolor centrotorácico opresivo de ${minutes} minutos de evolución, irradiado a epigastrio y cuello, acompañado de cortejo vegetativo profuso con náuseas intensas. A la exploración física en el Box de Reanimación: TA ${pas}/${pad} mmHg, FC ${hr} lpm rítmica, FR 20 rpm, SatO2 96% con aire ambiente. Piel fría, pálida y sudorosa. Ingurgitación yugular evidente a 45º sin soplos carotídeos. Auscultación cardiaca: tonos rítmicos sin soplos. Auscultación pulmonar: murmullo vesicular conservado bilateralmente, completamente limpio sin estertores crepitantes en ningún campo. ECG de 12 derivaciones inicial: elevación del segmento ST de 2,5 mm en II, III y aVF con descenso especular del ST en derivaciones I y aVL.`;
 
-          const rawQuestions = [
+          const questions = [
             {
-              text: "¿Cuál es el diagnóstico electrocardiográfico territorial de sospecha inmediata?",
+              text: "¿Cuál es el diagnóstico electrocardiográfico territorial inmediato ante los hallazgos descritos?",
               options: [
                 "IAMCEST de localización inferior",
-                "Pericarditis aguda viral idiopática",
-                "Tromboembolismo pulmonar masivo",
-                "Disección aórtica tipo B de Stanford"
+                "Pericarditis aguda vírica difusa",
+                "Tromboembolismo pulmonar masivo con sobrecarga derecha",
+                "Disección aórtica aguda tipo B de Stanford"
               ],
               correct: 0,
-              detail: "La elevación territorial del ST en derivaciones II, III y aVF con imágenes especulares en cara lateral alta (I, aVL) define un IAM transmural de cara inferior.",
-              distractors: "La pericarditis cursa con elevación cóncava difusa no territorial. El TEP suele cursar con taquicardia sinusal o patrón S1Q3T3.",
-              formula: "ST elevado en II, III, aVF + descenso en I, aVL = IAMCEST Inferior, por oclusión transmural aguda de la arteria coronaria derecha o circunfleja."
+              detail: "La elevación territorial del ST en derivaciones II, III y aVF con imagen especular en cara lateral alta (I, aVL) define un síndrome coronario agudo transmural de cara inferior.",
+              distractors: "La pericarditis cursa con elevación cóncava difusa no territorial con descenso del PR. El TEP suele cursar con taquicardia sinusal o patrón S1Q3T3.",
+              formula: "ST elevado en II, III y aVF + descenso especular en I y aVL = IAMCEST Inferior, por oclusión aguda transmural coronaria."
             },
             {
-              text: "¿Qué registro electrocardiográfico adicional está obligado a realizar de inmediato?",
+              text: "Ante la asociación de IAM inferior, hipotensión arterial y campos pulmonares completamente limpios, ¿qué registro electrocardiográfico adicional es prioritario?",
               options: [
                 "Derivaciones precordiales derechas (V3R y V4R)",
-                "Exclusivamente derivaciones posteriores V7 a V9",
-                "Monitorización Holter de 24 horas",
-                "Ergometría precoz en cinta rodante"
+                "Derivaciones posteriores exclusivas (V7 a V9)",
+                "Registro Holter de 24 horas",
+                "Ergometría precoz monitorizada"
               ],
               correct: 0,
-              detail: "Ante todo IAM inferior con hipotensión arterial y campos pulmonares limpios, es mandatorio registrar V3R y V4R para detectar afectación del ventrículo derecho.",
-              distractors: "V7-V9 exploran la cara posterior. La ergometría está contraindicada en fase aguda.",
-              formula: "IAM inferior + Hipotensión + Pulmones limpios = Derivaciones derechas (V4R), por la altísima frecuencia de infarto concomitante del ventrículo derecho."
+              detail: "En todo IAM inferior con hipotensión y ausencia de congestión pulmonar, es mandatorio registrar V3R y V4R para confirmar o descartar extensión al ventrículo derecho.",
+              distractors: "V7-V9 exploran la cara posterior basal. La ergometría está absolutamente contraindicada en fase aguda.",
+              formula: "IAM inferior + Hipotensión + Pulmones limpios = Registrar V4R, porque hasta el 40% asocian infarto del ventrículo derecho dependiente de precarga."
             },
             {
-              text: "En V4R se confirma elevación del ST > 1 mm. ¿Cuál es la primera medida terapéutica hemodinámica?",
+              text: "En la derivación V4R se confirma elevación del segmento ST > 1 mm. ¿Cuál es la primera medida de resucitación hemodinámica indicada?",
               options: [
-                "Bolo prudente de cristaloide isotónico (250-500 mL) con reevaluación",
-                "Administrar nitroglicerina sublingual 0,4 mg",
-                "Administrar furosemida 40 mg intravenosa en bolo",
-                "Administrar cloruro mórfico 5 mg intravenoso en bolo"
+                "Bolo prudente de cristaloide isotónico (250-500 mL) con reevaluación clínica continua",
+                "Administración inmediata de nitroglicerina sublingual 0,4 mg",
+                "Furosemida intravenosa 40 mg en bolo directo",
+                "Cloruro mórfico 5 mg intravenoso en bolo directo"
               ],
               correct: 0,
-              detail: "El ventrículo derecho infartado pierde contractilidad y depende críticamente de una precarga elevada para mantener el gasto hacia el corazón izquierdo.",
-              distractors: "Los vasodilatadores (nitratos, morfina) y los diuréticos reducen bruscamente el retorno venoso, precipitando un shock refractario grave.",
-              formula: "IAM de Ventrículo Derecho + Hipotensión = Aporte prudente de volumen (precarga), porque el corazón derecho disfuncionante necesita presión de llenado."
+              detail: "El ventrículo derecho infartado pierde contractilidad y depende críticamente de una presión de llenado (precarga) suficiente para bombear sangre a través del lecho pulmonar hacia el ventrículo izquierdo.",
+              distractors: "Los vasodilatadores (nitratos, morfina) y los diuréticos reducen bruscamente el retorno venoso, precipitando un shock cardiogénico profundo y refractario.",
+              formula: "IAM de Ventrículo Derecho + Hipotensión = Sueroterapia prudente en bolos, porque el VD disfuncionante requiere alta precarga para mantener el gasto cardíaco."
             },
             {
-              text: "El paciente mantiene bradicardia sintomática con signos de hipoperfusión. ¿Qué fármaco inicial está indicado?",
+              text: "¿Qué grupo farmacológico de uso antianginoso habitual debe evitarse terminantemente en este paciente?",
+              options: [
+                "Nitratos (nitroglicerina sublingual o en perfusión)",
+                "Ácido acetilsalicílico a dosis antiagregante",
+                "Heparina no fraccionada o heparinas de bajo peso molecular",
+                "Atorvastatina a dosis altas de carga"
+              ],
+              correct: 0,
+              detail: "Los nitratos son venodilatadores potentes que colapsan la precarga de la que depende el ventrículo derecho isquémico, provocando parada cardiaca o shock grave.",
+              distractors: "El AAS y los anticoagulantes forman parte del pilar estándar de tratamiento antitrombótico del SCA.",
+              formula: "Nitratos + Infarto de Ventrículo Derecho = Hipotensión severa y colapso circulatorio, porque anulan la precarga indispensable."
+            },
+            {
+              text: "El paciente presenta bradicardia sinusal sintomática con FC de " + hr + " lpm e hipoperfusión. ¿Cuál es el fármaco de primera línea según el soporte vital avanzado?",
               options: [
                 "Atropina 0,5 mg intravenosa en bolo",
-                "Adenosina 6 mg en bolo intravenoso rápido",
+                "Adenosina 6 mg en bolo rápido intravenoso",
                 "Verapamilo 5 mg intravenoso lento",
-                "Digoxina 0,5 mg intravenosa directa"
+                "Digoxina 0,5 mg en bolo intravenoso"
               ],
               correct: 0,
-              detail: "En bradicardias sintomáticas con inestabilidad hemodinámica, la atropina 0,5 mg en bolo IV (repetible hasta 3 mg) es el fármaco de primera línea para revertir el tono vagal.",
-              distractors: "La adenosina y el verapamilo bloquean el nodo AV y empeoran la bradicardia.",
-              formula: "Bradicardia sintomática + Hipotensión = Atropina 0,5 mg IV, porque bloquea el hipertono vagal reflejo frecuente en la isquemia inferior."
+              detail: "En bradicardias sintomáticas con repercusión hemodinámica, la atropina a dosis de 0,5 mg IV (repetible hasta 3 mg) es el fármaco de primera elección para revertir el hipertono vagal.",
+              distractors: "La adenosina y los calcioantagonistas bloquean la conducción AV y agravarían de forma crítica la bradicardia.",
+              formula: "Bradicardia sintomática + Hipotensión = Atropina 0,5 mg IV, porque bloquea el tono vagal reflejo propio de la isquemia coronaria inferior."
             },
             {
-              text: "El hospital dispone de sala de hemodinámica activa las 24 horas a 15 minutos. ¿Cuál es la estrategia de reperfusión indicada?",
+              text: "Estando en un hospital con sala de hemodinámica disponible 24 horas y tiempo previsible a cateterismo < 60 minutos, ¿cuál es la estrategia de reperfusión de elección?",
               options: [
                 "Activación de Código Infarto para Angioplastia Primaria urgente",
-                "Esperar la primera analítica de troponinas a las 3 horas",
-                "Observación en urgencias durante 12 horas",
-                "Coronariografía programada electiva en 48 horas"
+                "Esperar la curva de troponinas ultrasensibles a las 3 horas para confirmar necrosis",
+                "Observación en urgencias durante 12 horas antes de decidir",
+                "Fibrinólisis sistémica inmediata sin traslado a hemodinámica"
               ],
               correct: 0,
-              detail: "En el IAMCEST el tiempo es miocardio. Si la angioplastia primaria puede realizarse en menos de 120 minutos desde el diagnóstico, es la estrategia de elección.",
-              distractors: "Nunca se debe esperar a que las enzimas cardiacas se eleven para reperfundir un IAMCEST evidente.",
-              formula: "IAMCEST + Sala de Hemodinámica accesible en <120 min = Angioplastia Primaria Urgente, porque la apertura mecánica inmediata del vaso salva miocardio."
+              detail: "En el IAMCEST con tiempo desde el primer contacto médico a balón < 120 minutos, la angioplastia primaria mecánica es la estrategia de elección indiscutible.",
+              distractors: "Nunca se debe demorar la reperfusión esperando marcadores biológicos en un IAMCEST evidente. La fibrinólisis se reserva para demoras mayores a 120 min.",
+              formula: "IAMCEST + Hemodinámica en < 120 min = Angioplastia Primaria Urgente, porque la apertura mecánica inmediata del vaso salva miocardio viable."
             },
             {
-              text: "¿Qué fármaco antianginoso clásico debe evitarse terminantemente en este paciente?",
+              text: "¿Qué complicación del sistema de conducción auriculoventricular es especialmente prevalente en este tipo de infartos?",
               options: [
-                "Nitratos (nitroglicerina sublingual o intravenosa)",
-                "Ácido acetilsalicílico",
-                "Heparina no fraccionada o enoxaparina",
-                "Atorvastatina en dosis de carga"
+                "Bloqueo auriculoventricular de diversos grados (BAV)",
+                "Fibrilación auricular con respuesta ventricular lenta por hipotiroidismo",
+                "Torsade de pointes por hipercalcemia aguda",
+                "Síndrome de Brugada adquirido"
               ],
               correct: 0,
-              detail: "Los nitratos son venodilatadores que disminuyen la precarga venosa sistémica; en un infarto de ventrículo derecho inducen shock cardiogénico iatrogénico grave.",
-              distractors: "El AAS y los anticoagulantes forman parte del tratamiento estándar del SCA sin contraindicación hemodinámica.",
-              formula: "Nitratos + Infarto de VD = Hipotensión profunda y Shock, porque eliminan el volumen de llenado del ventrículo derecho."
+              detail: "La arteria del nodo auriculoventricular se origina en la arteria coronaria derecha en el 90% de los pacientes (dominancia derecha), por lo que la isquemia inferior asocia frecuentemente bloqueos AV.",
+              distractors: "El síndrome de Brugada o las torsades son canalopatías dependientes de repolarización.",
+              formula: "IAM inferior + Oclusión de coronaria derecha = Bloqueo AV, porque la irrigación nodal procede de la coronaria derecha dominante."
             },
             {
-              text: "¿Qué complicación eléctrica nodal es especialmente frecuente en el infarto inferior?",
+              text: "Durante la monitorización, el paciente presenta pérdida súbita de conciencia y el monitor muestra Taquicardia Ventricular sin pulso. ¿Qué acción inmediata procede?",
               options: [
-                "Bloqueo auriculoventricular de diverso grado",
-                "Fibrilación auricular con respuesta lenta por mixedema",
-                "Torsade de pointes por hipercalcemia",
-                "Agranulocitosis por fármacos"
+                "Desfibrilación eléctrica no sincronizada inmediata y reanudación de RCP continua",
+                "Cardioversión eléctrica sincronizada con 50 Julios",
+                "Administración de adenosina 12 mg en bolo intravenoso rápido",
+                "Administración exclusiva de atropina 1 mg intravenosa"
               ],
               correct: 0,
-              detail: "La arteria del nodo auriculoventricular nace de la arteria coronaria derecha en el 90% de los individuos, por lo que el IAM inferior asocia con frecuencia bloqueos AV.",
-              distractors: "El síndrome de Brugada o las torsades dependen de canales iónicos.",
-              formula: "IAM inferior + Arteria coronaria derecha = Bloqueo AV, porque la irrigación del nodo auriculoventricular procede de la coronaria derecha dominante."
+              detail: "La TV sin pulso y la fibrilación ventricular son ritmos de parada cardiaca desfibrilables; la prioridad absoluta es la descarga no sincronizada inmediata sin demora seguida de RCP.",
+              distractors: "La cardioversión sincronizada solo se utiliza en taquiarritmias inestables con pulso palpable presente.",
+              formula: "TV sin pulso = Desfibrilación no sincronizada + RCP continua, porque no hay gasto eyectivo y el choque eléctrico resetea el marcapasos miocárdico."
             },
             {
-              text: "Durante la monitorización el paciente presenta pérdida brusca de conciencia y el monitor muestra Taquicardia Ventricular sin pulso. ¿Qué acción es inmediata?",
+              text: "Tras dos minutos de RCP, se objetiva ritmo electrocardiográfico organizado a 60 lpm pero persiste ausencia de pulso central palpable (AESP). ¿Cuál es la actitud?",
               options: [
-                "Desfibrilación no sincronizada inmediata y RCP continua",
-                "Cardioversión sincronizada con 50 J",
-                "Atropina 1 mg intravenosa",
-                "Adenosina 12 mg en bolo"
+                "Continuar RCP de alta calidad, adrenalina 1 mg cada 3-5 minutos y buscar causas reversibles (4H/4T)",
+                "Aplicar una descarga eléctrica inmediata de 360 Julios monofásicos",
+                "Administrar adenosina 6 mg intravenosa en bolo",
+                "Detener las compresiones torácicas y esperar recuperación espontánea"
               ],
               correct: 0,
-              detail: "La TV sin pulso y la fibrilación ventricular son ritmos de parada cardiaca desfibrilables. Se debe aplicar descarga no sincronizada y reiniciar RCP de inmediato.",
-              distractors: "La sincronización se usa únicamente si hay pulso palpable.",
-              formula: "TV sin pulso = Desfibrilación eléctrica no sincronizada + RCP, porque el corazón no eyecta pulso y solo el choque eléctrico resetea el ritmo."
+              detail: "La Actividad Eléctrica Sin Pulso (AESP) es un ritmo no desfibrilable. Su manejo requiere RCP de calidad ininterrumpida, adrenalina y diagnóstico etiológico de las 4H y 4T.",
+              distractors: "Desfibrilar una AESP no tiene indicación y es perjudicial para la contractilidad.",
+              formula: "AESP = RCP + Adrenalina + 4H/4T (No desfibrilar), porque hay actividad eléctrica pero colapso electromecánico."
             },
             {
-              text: "Tras dos minutos de RCP se comprueba ritmo organizado en monitor pero sigue sin haber pulso palpable (AESP). ¿Cuál es la actitud?",
+              text: "La primera determinación de troponina I ultrasensible extraída a los " + minutes + " minutos del dolor resulta normal. ¿Qué significado clínico tiene?",
               options: [
-                "Mantener RCP de alta calidad, adrenalina 1 mg cada 3-5 min y buscar 4H/4T",
-                "Descarga inmediata de 360 J monofásica",
-                "Administrar adenosina 6 mg intravenosa",
-                "Detener las compresiones para realizar ecografía de 10 minutos"
+                "No modifica la indicación de reperfusión urgente ni descarta el IAMCEST",
+                "Descarta de forma concluyente cualquier necrosis miocárdica",
+                "Permite el alta inmediata y segura al domicilio",
+                "Obliga a suspender la activación del Código Infarto"
               ],
               correct: 0,
-              detail: "La Actividad Eléctrica Sin Pulso (AESP) no se desfibrila. El pilar es mantener compresiones de calidad, adrenalina precoz y diagnosticar causas reversibles (4H/4T).",
-              distractors: "Desfibrilar una AESP es inútil y perjudicial.",
-              formula: "AESP = RCP + Adrenalina + Búsqueda de Causas Reversibles (4H/4T), porque hay actividad eléctrica pero colapso mecánico."
+              detail: "En las primeras 1-2 horas tras la oclusión coronaria, los biomarcadores plasmáticos aún no han alcanzado concentraciones detectables; el diagnóstico del IAMCEST es clínico y electrocardiográfico.",
+              distractors: "Esperar a la elevación de troponinas para reperfundir un IAMCEST produce retrasos críticos y pérdida de miocardio.",
+              formula: "IAMCEST con ECG típico + Troponina inicial normal = Sigue siendo IAMCEST, porque la liberación enzimática tisular tarda varias horas."
             },
             {
-              text: "Si el paciente hubiera debutado con dolor desgarrador transfixiante con asimetría de pulsos en extremidades, ¿qué patología priorizaría?",
+              text: "En el POCUS cardiaco a pie de cama se observa dilatación de cavidades derechas con movimiento paradójico del septo y ausencia de derrame pericárdico. ¿Qué orienta este hallazgo?",
               options: [
-                "Disección aórtica aguda (Síndrome aórtico agudo)",
+                "Disfunción ventricular derecha aguda en el contexto de isquemia",
+                "Taponamiento cardiaco agudo con compromiso hemodinámico",
+                "Shock hipovolémico hemorrágico primario",
+                "Presencia de cortocircuito arteriovenoso sistémico"
+              ],
+              correct: 0,
+              detail: "El POCUS confirma la sobrecarga aguda y dilatación del ventrículo derecho secundaria al infarto transmural, apoyando la necesidad de soporte volumétrico.",
+              distractors: "El taponamiento cardiaco exige necesariamente la presencia objetiva de derrame pericárdico.",
+              formula: "POCUS con dilatación de VD + Sin derrame = Fallo agudo de VD, porque la claudicación miocárdica derecha genera sobrecarga retrógrada."
+            },
+            {
+              text: "Si el paciente hubiera debutado con dolor desgarrador transfixiante hacia la espalda, hipertensión inicial y asimetría de pulsos periféricos, ¿qué entidad amenazante priorizaría?",
+              options: [
+                "Síndrome aórtico agudo (Disección de aorta)",
                 "Pericarditis aguda bacteriana",
-                "Reflujo gastroesofágico severo",
-                "Costocondritis condroesternal"
+                "Reflujo gastroesofágico espasmódico",
+                "Costocondritis osteocartilaginosa aislada"
               ],
               correct: 0,
-              detail: "El dolor desgarrador de inicio instantáneo irradiado a la espalda con asimetría de pulsos en extremidades es el cuadro guía del síndrome aórtico agudo.",
-              distractors: "La pericarditis y los problemas esofágicos no cursan con asimetría de pulsos periféricos.",
-              formula: "Dolor desgarrador hiperagudo + Asimetría de pulsos = Sospecha de Disección Aórtica, porque el desgarro de la íntima compromete los orificios arteriales."
+              detail: "El dolor desgarrador de inicio instantáneo irradiado al área interescapular con asimetría de pulsos en extremidades es el cuadro guía de sospecha de disección aórtica.",
+              distractors: "La pericarditis y los problemas digestivos o parietales no causan asimetría de pulsos arteriales.",
+              formula: "Dolor desgarrador hiperagudo + Asimetría de pulsos = Sospecha de Disección Aórtica, por compromiso de ramas arteriales por la falsa luz."
             },
             {
-              text: "Llega la analítica inicial extraída a los 40 minutos del dolor y la troponina ultrasensible es normal. ¿Qué implicación clínica tiene?",
+              text: "Tras la recuperación de circulación espontánea (ROSC), ¿cuál es la prioridad inmediata en el manejo posparada?",
               options: [
-                "No modifica la indicación de reperfusión urgente",
-                "Descarta por completo el infarto de miocardio",
-                "Permite el alta a domicilio de forma segura",
-                "Diagnostica un tromboembolismo pulmonar"
+                "Optimizar ABC, obtener ECG de 12 derivaciones de control y traslado urgente a hemodinámica",
+                "Trasladar directamente a una planta de hospitalización convencional",
+                "Suspender toda sedación y esperar 6 horas en observación básica",
+                "Iniciar perfusión de amiodarona en monoterapia exclusiva"
               ],
               correct: 0,
-              detail: "En las primeras horas de un infarto, las troponinas pueden ser aún normales en sangre periférica. El diagnóstico del IAMCEST es clínico-electrocardiográfico.",
-              distractors: "Esperar a que la troponina sea positiva para activar la reperfusión causa retrasos letales.",
-              formula: "ECG con elevación de ST + Troponina normal temprana = Sigue siendo IAMCEST, porque la necrosis tarda horas en liberar enzimas a la circulación."
-            },
-            {
-              text: "En el POCUS cardiaco urgente se observa ventrículo derecho dilatado que comprime al ventrículo izquierdo, sin derrame pericárdico. ¿Qué traduce?",
-              options: [
-                "Disfunción aguda y sobrecarga del ventrículo derecho",
-                "Taponamiento cardiaco clásico",
-                "Exclusión formal de cualquier cardiopatía",
-                "Shock séptico con hiperdinamia"
-              ],
-              correct: 0,
-              detail: "El POCUS evidencia la dilatación y fallo contráctil del VD en el contexto del infarto, desplazando el tabique hacia el VI sin líquido pericárdico.",
-              distractors: "No puede haber taponamiento cardiaco si el ecógrafo no visualiza derrame pericárdico.",
-              formula: "POCUS con dilatación de VD + Sin derrame = Fallo de Ventrículo Derecho, porque la sobrecarga abomba la pared ventricular derecha."
-            },
-            {
-              text: "Tras recuperar circulación espontánea (ROSC), ¿cuál es el plan inmediato prioritario?",
-              options: [
-                "Optimizar ABC, obtener ECG de 12 derivaciones y trasladar a hemodinámica urgente",
-                "Enviar a planta de hospitalización general",
-                "Administrar infusión de amiodarona en monoterapia exclusiva",
-                "Suspender toda sedación y esperar 6 horas en observación"
-              ],
-              correct: 0,
-              detail: "Tras el ROSC se deben asegurar la ventilación y perfusión, registrar ECG para reevaluar la isquemia y trasladar de inmediato para reperfusión coronaria.",
-              distractorWhy: "El paciente posparada es un paciente crítico que no puede ir a planta; el tratamiento etiológico definitivo es la revascularización coronaria.",
+              detail: "Tras el ROSC se debe asegurar vía aérea, oxigenación y tensión arterial, registrar ECG para reevaluar la isquemia y proceder a la revascularización coronaria inmediata del vaso culpable.",
+              distractors: "El paciente posparada es un paciente crítico que no puede ir a planta; el tratamiento etiológico definitivo es la revascularización coronaria.",
               formula: "ROSC tras parada cardiaca = Vía aérea + ECG de 12 derivaciones + Reperfusión etiológica, porque el vaso coronario sigue cerrado."
             },
             {
-              text: "En la analítica de control se detecta potasio de 7,4 mEq/l con QRS ancho. ¿Cuál es el objetivo inmediato del gluconato de calcio intravenoso?",
+              text: "En la analítica se detecta hiperpotasemia de 7,3 mEq/L con ensanchamiento progresivo del QRS. ¿Cuál es el objetivo primordial del gluconato de calcio intravenoso?",
               options: [
-                "Estabilizar la membrana del miocito frente a arritmias letales",
-                "Eliminar el potasio por vía renal mediante diuresis",
-                "Promover la entrada del potasio al hepatocito",
-                "Corregir una alcalosis respiratoria"
+                "Estabilizar eléctricamente la membrana del cardiomiocito frente a arritmias letales",
+                "Eliminar el potasio del organismo mediante excreción urinaria forzada",
+                "Favorecer la entrada de potasio al compartimento intracelular hepático",
+                "Neutralizar una alcalosis respiratoria secundaria"
               ],
               correct: 0,
-              detail: "El calcio antagoniza el efecto electrofisiológico tóxico del potasio en el miocardio aumentando el potencial umbral, pero NO modifica la cifra sérica de potasio.",
+              detail: "El calcio no reduce la cifra plasmática de potasio; antagoniza su toxicidad sobre el potencial de acción cardiaco elevando el potencial umbral, actuando en 1-3 minutos.",
               distractors: "El calcio no baja ni elimina el potasio corporal; su función es cardioprotección eléctrica inmediata.",
               formula: "Calcio IV en Hiperpotasemia = Estabiliza la membrana miocárdica, porque neutraliza la cardiotoxicidad eléctrica pero no baja el potasio."
             },
             {
-              text: "Si el paciente presentara ortopnea, estertores crepitantes hasta campos medios bilaterales, TA 75/40 mmHg y FEVI del 20%, ¿cuál sería el mecanismo de shock?",
+              text: "Si el paciente evolucionara con estertores húmedos crepitantes bilaterales hasta campos superiores, TA 70/40 mmHg y FEVI del 25%, ¿cuál sería el mecanismo de shock?",
               options: [
-                "Shock cardiogénico por fallo de bomba izquierda",
-                "Shock distributivo vasopléjico",
-                "Shock hipovolémico hemorrágico",
-                "Shock anafiláctico con angioedema"
+                "Shock cardiogénico por fallo contráctil izquierdo (bomba)",
+                "Shock distributivo vasopléjico puro",
+                "Shock hipovolémico hemorrágico no controlado",
+                "Shock anafiláctico por histaminoliberación masiva"
               ],
               correct: 0,
-              detail: "La hipotensión arterial asociada a signos evidentes de congestión pulmonar (edema agudo de pulmón) y depresión severa de la FEVI define el shock cardiogénico.",
-              distractors: "El shock distributivo y el hipovolémico cursan sin congestión pulmonar bilateral ni estertores.",
+              detail: "La combinación de hipotensión arterial severa, signos floridos de congestión pulmonar retrógrada (edema agudo de pulmón) y fracción de eyección gravemente deprimida define el shock cardiogénico.",
+              distractors: "El shock hipovolémico y el distributivo cursan sin congestión alveolar ni edema agudo de pulmón bilateral.",
               formula: "Hipotensión + Estertores crepitantes (EAP) + FEVI deprimida = Shock Cardiogénico, porque el ventrículo izquierdo claudica como bomba."
             }
           ];
 
-          return { id, category: "Cardiovascular y Hemodinámica", title, vignette, questions: rawQuestions };
+          return { id, clue: "Dolor centrotorácico agudo e inestabilidad hemodinámica", title, vignette, questions };
         }
       },
+
+      // 2. SEPSIS URINARIA OBSTRUCTIVA / SHOCK SÉPTICO
       {
-        code: "SEPSIS_URO",
-        category: "Infeccioso y Nefrourología",
         topic: "SEPSIS",
-        generator: function() {
-          const names = ["Mujer de 72 años", "Varón de 69 años", "Mujer de 76 años", "Varón de 75 años"];
-          const pas = Math.floor(Math.random() * 12) + 80;
-          const pad = Math.floor(Math.random() * 8) + 46;
-          const fc = Math.floor(Math.random() * 15) + 118;
-          const fr = Math.floor(Math.random() * 6) + 28;
-          const id = "MUE-" + Math.floor(1000 + Math.random() * 9000);
+        clue: "Fiebre, hipotensión, dolor en flanco y fracaso renal agudo",
+        generate: function() {
+          const gender = randomChoice(["M", "F"]);
+          const age = gender === "M" ? randomInt(66, 81) : randomInt(68, 85);
+          const name = `${gender === "M" ? "Varón" : "Mujer"} de ${age} años`;
+          const pas = randomInt(78, 86);
+          const pad = randomInt(44, 54);
+          const hr = randomInt(118, 134);
+          const rr = randomInt(26, 32);
+          const temp = (Math.random() * 0.8 + 38.8).toFixed(1);
+          const lact = (Math.random() * 1.5 + 4.2).toFixed(1);
+          const creat = (Math.random() * 0.9 + 2.1).toFixed(1);
+          const id = "MUE-" + randomInt(1100, 9990);
 
-          const title = `Caso ${id}: Sepsis Grave / Shock Séptico Urinario con Uropatía Obstructiva`;
-          const vignette = `${names[Math.floor(Math.random()*names.length)]}, con antecedentes de diabetes mellitus tipo 2 y litiasis urinaria. Consulta por fiebre con escalofríos de hasta 39,3 ºC, dolor constante en fosa lumbar derecha de 14 horas de evolución y vómitos alimentarios. A la exploración: TA ${pas}/${pad} mmHg, FC ${fc} lpm, FR ${fr} rpm, SatO2 93% basal, relleno capilar 4 segundos, piel caliente y letargia leve (Glasgow 14). Puñopercusión renal derecha intensamente dolorosa. Analítica urgente: Leucocitos 19.400/mm³ con 20% de cayados, Creatinina 2,3 mg/dl, Lactato sérico 4,8 mmol/l. Tira reactiva de orina: leucocitos +++ y nitritos positivos.`;
+          const title = `Caso Clínico #${id}: Paciente de ${age} años con síndrome febril agudo, dolor lumbar e hipotensión`;
+          const vignette = `${name}, diabético con antecedentes de litiasis renal derecha. Acude al Servicio de Urgencias por fiebre de hasta ${temp} ºC con escalofríos, dolor continuo en fosa lumbar derecha de 16 horas de evolución y vómitos alimentarios incoercibles. A la exploración física: TA ${pas}/${pad} mmHg, FC ${hr} lpm, FR ${rr} rpm, SatO2 93% basal, relleno capilar enlentecido (4 segundos), piel caliente con ligera sudoración, somnoliento pero reactivo a órdenes simples (Glasgow 14). Auscultación cardiopulmonar: taquicardia sinusal sin soplos, murmullo vesicular conservado sin ruidos sobreañadidos. Abdomen blando, no peritonítico, con dolor a la palpación profunda en flanco derecho y puñopercusión renal derecha intensamente positiva. Tira reactiva de orina urgente: leucocituria +++, nitritos positivos, microhematuria. Analítica urgente: Leucocitos 19.800/mm³ (22% cayados), Plaquetas 115.000/mm³, Creatinina ${creat} mg/dL (basal 0,9), Urea 88 mg/dL, Lactato arterial ${lact} mmol/L.`;
 
-          const rawQuestions = [
+          const questions = [
             {
-              text: "¿Cuál es el diagnóstico sindrómico prioritario según los criterios de sepsis?",
+              text: "¿Cuál es el diagnóstico sindrómico prioritario ante este cuadro clínico y biológico?",
               options: [
-                "Sepsis grave con hipoperfusión / Shock séptico",
-                "Cistitis aguda no complicada",
-                "Cólico nefrítico simple no complicado",
-                "Gastroenteritis aguda viral autolimitada"
+                "Sepsis grave con hipoperfusión tisular / Shock séptico",
+                "Cistitis aguda bacteriana no complicada",
+                "Cólico renoureteral simple sin compromiso sistémico",
+                "Gastroenteritis aguda deshidratante no invasiva"
               ],
               correct: 0,
-              detail: "Presenta infección bacteriana documentada junto con disfunción orgánica aguda multiorgánica (renal, neurológica) e hiperlactacidemia > 4 mmol/l con hipotensión.",
-              distractors: "La cistitis y el cólico simple no cursan con fracaso multiorgánico ni hipoperfusión.",
-              formula: "Infección urinaria + Hipotensión + Lactato > 4 = Shock Séptico / Sepsis Grave, porque existe respuesta inmunitaria desregulada que amenaza la vida."
+              detail: "Presenta una infección urinaria documentada asociada a disfunción orgánica aguda multiorgánica (renal, hematológica, SNC) e hiperlactacidemia > 4 mmol/L con hipotensión.",
+              distractors: "La cistitis y el cólico nefrítico simple no asocian disfunción orgánica aguda ni hiperlactacidemia.",
+              formula: "Infección urinaria + Hipotensión + Lactato > 4 = Shock Séptico / Sepsis con hipoperfusión, porque hay respuesta inflamatoria desregulada con amenaza vital."
             },
             {
-              text: "¿Cuál es la conducta diagnóstica y terapéutica prioritaria en la primera hora?",
+              text: "¿Cuál es la conducta diagnóstica y terapéutica prioritaria durante la primera hora de atención?",
               options: [
-                "Extracción de hemocultivos y urocultivo sin demorar antibiótico IV de amplio espectro y fluidos",
-                "Esperar al resultado del urocultivo antes de cualquier fármaco",
-                "Alta al domicilio con pauta de analgésicos orales",
-                "Interconsulta a urología sin canalizar vías intravenosas"
+                "Extracción inmediata de hemocultivos y urocultivo sin demorar la antibioterapia IV de amplio espectro ni los fluidos",
+                "Esperar al resultado definitivo del antibiograma del urocultivo para pautar antibiótico",
+                "Alta al domicilio con pauta de analgésicos orales y antiinflamatorios",
+                "Consulta diferida a urología ambulatoria sin canalizar vías periféricas"
               ],
               correct: 0,
-              detail: "Las guías de Sepsis recomiendan tomar cultivos microbiológicos inmediatamente sin demorar el inicio del antibiótico de amplio espectro más allá de los primeros 60 minutos.",
-              distractors: "Cada hora de retraso en la administración del antibiótico incrementa la mortalidad en un 7-8%.",
-              formula: "Sepsis con hipoperfusión = Cultivos + Antibiótico IV precoz (<1h) + Sueroterapia, porque el retardo antimicrobiano penaliza la supervivencia."
+              detail: "Las guías internacionales de Sepsis 2026 recomiendan extraer cultivos de inmediato sin retrasar la administración de la primera dosis de antibiótico IV más allá de los primeros 60 minutos.",
+              distractors: "Cada hora de retraso en la administración del antimicrobiano en shock séptico incrementa significativamente la mortalidad hospitalaria.",
+              formula: "Sepsis con hipoperfusión = Cultivos inmediatos + Antibiótico IV precoz (< 1 h) + Sueroterapia, porque el retraso antibiótico aumenta la mortalidad."
             },
             {
-              text: "¿Qué solución intravenosa es de primera elección para la resucitación volumétrica?",
+              text: "¿Qué solución intravenosa constituye la primera elección para la resucitación volumétrica inicial?",
               options: [
                 "Cristaloides isotónicos balanceados o suero salino al 0,9%",
-                "Coloides sintéticos (almidones de hidroxietilo)",
+                "Coloides sintéticos a base de almidones de hidroxietilo (HES)",
                 "Suero glucosado al 5% en agua destilada exclusivo",
-                "No administrar ningún líquido por vía intravenosa"
+                "Gelatinas sintéticas en bolos continuos de 3 litros"
               ],
               correct: 0,
-              detail: "Los cristaloides balanceados o el suero salino al 0,9% (30 mL/kg en las primeras 3 horas) son el fluido de primera línea según las guías internacionales.",
-              distractors: "Los almidones provocan fracaso renal y necesidad de diálisis.",
-              formula: "Resucitación en sepsis = Cristaloides isotónicos, porque restauran la volemia efectiva sin toxicidad renal."
+              detail: "Los cristaloides isotónicos (a dosis recomendada de inicio de al menos 30 mL/kg en las primeras 3 horas) son los fluidos de primera línea para expandir el compartimento vascular.",
+              distractors: "Los almidones sintéticos incrementan el riesgo de fracaso renal agudo grave y necesidad de terapia sustitutiva.",
+              formula: "Resucitación en sepsis = Cristaloides isotónicos, porque restauran la volemia efectiva sin toxicidad tubular renal."
             },
             {
-              text: "Tras infundir 2.000 mL de cristaloides, la PAM persiste en 55 mmHg. ¿Qué vasopresor de primera elección debe iniciarse?",
+              text: "Tras infundir 2.000 mL de cristaloides, la PAM persiste en 54 mmHg. ¿Qué fármaco vasopresor de primera elección debe iniciarse?",
               options: [
-                "Noradrenalina en perfusión intravenosa",
-                "Dobutamina en perfusión intravenosa",
-                "Furosemida en bolo intravenoso",
-                "Adenosina en bolo intravenoso rápido"
+                "Noradrenalina en perfusión intravenosa continua",
+                "Dobutamina en monoterapia en perfusión rápida",
+                "Furosemida intravenosa en bolo",
+                "Dopamina a dosis dopaminérgica exclusivamente"
               ],
               correct: 0,
-              detail: "La noradrenalina es el vasopresor de primera línea para revertir la vasoplejía periférica y alcanzar el objetivo hemodinámico de PAM ≥ 65 mmHg.",
-              distractors: "La dobutamina es un inotrópico que vasodilata y agravaría la hipotensión.",
-              formula: "Hipotensión persistente tras fluidos en sepsis = Noradrenalina precoz, porque combate la vasoplejía periférica con efecto alfa-1."
+              detail: "La noradrenalina es el vasopresor de primera línea para restaurar el tono vascular periférico y alcanzar el objetivo de PAM ≥ 65 mmHg en el shock séptico.",
+              distractors: "La dobutamina es un inotrópico que genera vasodilatación y agravaría la hipotensión si se usa como vasopresor primario.",
+              formula: "Hipotensión refractaria a volumen en sepsis = Noradrenalina precoz, porque combate la vasoplejía periférica con potente efecto alfa-1."
             },
             {
-              text: "¿Qué complicación tiempo-dependiente es crucial descartar de inmediato en este paciente?",
+              text: "¿Qué complicación tiempo-dependiente crítica debe descartarse de inmediato en este paciente?",
               options: [
-                "Uropatía obstructiva infectada (litiasis con hidronefrosis)",
-                "Quiste renal simple cortical asintomático",
-                "Nefropatía diabética grado I",
+                "Uropatía obstructiva infectada a tensión (litiasis con hidronefrosis)",
+                "Quiste cortical renal simple asintomático",
+                "Nefropatía diabética incipiente grado I",
                 "Vejiga neurógena pura no complicada"
               ],
               correct: 0,
-              detail: "La asociación de infección urinaria y litiasis obstructiva crea una piouronefrosis a tensión que mantiene el shock séptico hasta que se desobstruye.",
-              distractors: "El quiste renal y la nefropatía diabética no causan fiebre, shock ni puñopercusión positiva aguda.",
-              formula: "Sepsis urinaria + Litiasis previa = Descartar Obstrucción Ureteral, porque un sistema cerrado infectado a presión genera bacteriemia constante."
+              detail: "La asociación de infección urinaria y litiasis genera piouronefrosis a tensión, que perpetúa la bacteriemia masiva y el shock refractario si no se drena mecánicamente.",
+              distractors: "El quiste renal o la nefropatía diabética no causan fiebre, shock ni puñopercusión positiva aguda.",
+              formula: "Sepsis urinaria + Antecedente de litiasis = Descartar Obstrucción Ureteral, porque un sistema cerrado infectado a presión genera bacteriemia constante."
             },
             {
-              text: "La ecografía urgente demuestra litiasis de 9 mm en uréter proximal con hidronefrosis severa. ¿Cuál es el tratamiento urgente?",
+              text: "La ecografía renal urgente demuestra litiasis ureteral obstructiva con hidronefrosis severa. ¿Cuál es el tratamiento prioritario definitivo?",
               options: [
-                "Descompresión urgente de la vía urinaria (catéter doble J o nefrostomía percutánea)",
-                "Esperar 48 horas con analgésicos para ver si expulsa el cálculo",
-                "Litotricia extracorpórea por ondas de choque ambulatoria programada",
-                "Alta al domicilio con citrato potásico oral"
+                "Descompresión urgente de la vía urinaria mediante catéter doble J o nefrostomía percutánea",
+                "Manejo expectante durante 48 horas exclusivamente con fármacos analgésicos",
+                "Litotricia extracorpórea por ondas de choque programada de forma ambulatoria",
+                "Alta al domicilio con citrato potásico oral para disolver el cálculo"
               ],
               correct: 0,
-              detail: "El control del foco infeccioso es mandatorio. Sin descompresión urológica urgente, los antibióticos no penetran en la orina estancada a alta presión.",
-              distractors: "Esperar a la expulsión espontánea de un cálculo infectado de 9 mm provoca fallo multiorgánico y muerte.",
-              formula: "Obstrucción urinaria + Infección + Sepsis = Drenaje Urológico Inmediato, porque el control mecánico del foco es indispensable."
+              detail: "El control mecánico del foco infeccioso es mandatorio. Sin descompresión urológica inmediata, los antibióticos no alcanzan concentraciones efectivas en la orina estancada a alta presión.",
+              distractors: "Esperar a la expulsión espontánea de un cálculo infectado obstructivo en un paciente en shock séptico resulta letal.",
+              formula: "Obstrucción urinaria + Infección + Sepsis = Drenaje Urológico Inmediato, porque el control mecánico del foco es indispensable para apagar la bacteriemia."
             },
             {
-              text: "¿Para qué sirve monitorizar la evolución seriada del lactato sanguíneo?",
+              text: "¿Cuál es el valor clínico de monitorizar la evolución seriada del lactato sérico en este paciente?",
               options: [
-                "Para reevaluar la respuesta a la resucitación tisular y la perfusión celular",
-                "Para identificar la especie bacteriana causante",
-                "Para ajustar la dosis del antibiótico",
-                "Para determinar la composición química de la litiasis"
+                "Evaluar la respuesta hemodinámica y la restauración de la perfusión celular",
+                "Identificar la especie bacteriana gramnegativa exacta",
+                "Calcular la dosis de ajuste de los antibióticos",
+                "Predecir la composición bioquímica de la litiasis"
               ],
               correct: 0,
-              detail: "El descenso y aclaramiento del lactato sérico refleja la restauración del metabolismo aeróbico y la eficacia de la resucitación hemodinámica.",
-              distractors: "El lactato es un metabolito de hipoxia tisular, no un parámetro microbiológico.",
-              formula: "Lactato seriado descendente = Buena respuesta a la reanimación hemodinámica, porque traduce restauración de la oxigenación tisular."
+              detail: "El descenso del lactato sérico (aclaramiento de lactato) traduce una reanimación hemodinámica eficaz y la corrección de la hipoxia tisular.",
+              distractors: "El lactato es un marcador metabólico celular, no microbiológico.",
+              formula: "Lactato sérico descendente = Buena respuesta a la reanimación hemodinámica, porque traduce restauración de la oxigenación tisular."
             },
             {
-              text: "Con PAM en 68 mmHg con noradrenalina, persiste saturación venosa central baja y el ecocardio muestra hipocontractilidad difusa. ¿Qué fármaco se añade?",
+              text: "Con PAM en 68 mmHg conseguida con noradrenalina, persiste saturación venosa central baja y el ecocardio muestra hipocontractilidad difusa. ¿Qué fármaco se añade?",
               options: [
-                "Dobutamina en infusión continua",
-                "Suspender inmediatamente la noradrenalina",
-                "Adenosina en bolo intravenoso",
+                "Dobutamina en perfusión intravenosa continua",
+                "Suspender inmediatamente la perfusión de noradrenalina",
+                "Adenosina en bolo intravenoso rápido",
                 "Nitroglicerina intravenosa en dosis altas"
               ],
               correct: 0,
-              detail: "Ante disfunción miocárdica séptica demostrada con gasto cardiaco insuficiente a pesar de conseguir PAM adecuada, está indicado asociar dobutamina.",
-              distractors: "Suspender la noradrenalina reproduciría la hipotensión severa.",
-              formula: "PAM adecuada con Noradrenalina + Hipocontractilidad miocárdica = Añadir Dobutamina, porque aporta soporte inotrópico beta-1."
+              detail: "Ante disfunción miocárdica séptica documentada con gasto cardiaco insuficiente a pesar de conseguir una PAM adecuada con noradrenalina, está indicado asociar un inotrópico como la dobutamina.",
+              distractors: "Suspender la noradrenalina provocaría colapso vasopléjico inmediato.",
+              formula: "PAM adecuada con Noradrenalina + Hipocontractilidad miocárdica = Añadir Dobutamina, porque aporta soporte inotrópico beta-1 al corazón claudicante."
             },
             {
-              text: "El paciente presenta potasio de 7,3 mEq/l con ondas T picudas y ensanchamiento del QRS. ¿Qué fármaco se administra primero?",
+              text: "El paciente presenta potasio de 7,4 mEq/L con ondas T picudas y ensanchamiento del QRS. ¿Qué fármaco se administra en primer lugar?",
               options: [
-                "Gluconato de calcio o cloruro de calcio intravenoso en bolo",
-                "Insulina rápida con glucosa exclusivamente",
-                "Resina de intercambio iónico oral",
-                "Diuréticos de asa exclusivamente"
+                "Gluconato de calcio o cloruro de calcio intravenoso en bolo directo",
+                "Insulina regular intravenosa con suero glucosado exclusivamente",
+                "Resinas de intercambio iónico por vía oral",
+                "Diuréticos de asa a dosis estándar aislados"
               ],
               correct: 0,
-              detail: "Las alteraciones electrocardiográficas por hiperpotasemia anuncian arritmias letales inminentes. El calcio IV protege la membrana miocárdica en 1-3 minutos.",
-              distractors: "La insulina tarda entre 15 y 30 minutos en actuar.",
-              formula: "Potasio > 7 + ECG patológico = Calcio IV primero, porque neutraliza la cardiotoxicidad eléctrica."
+              detail: "Las alteraciones electrocardiográficas por hiperpotasemia anuncian arritmias ventriculares inminentes; el calcio estabiliza la membrana miocárdica en 1-3 minutos.",
+              distractors: "La insulina y las resinas tardan de 20 a 60 minutos en modificar los niveles de potasio.",
+              formula: "Potasio > 7 + ECG patológico = Calcio IV primero, porque neutraliza la cardiotoxicidad eléctrica de forma inmediata."
             },
             {
-              text: "¿Cuál es el mecanismo de acción de la infusión de insulina regular con glucosa en la hiperpotasemia?",
+              text: "¿Cuál es el mecanismo fisiológico de la infusión de insulina regular con glucosa en la hiperpotasemia?",
               options: [
-                "Desplazar transitoriamente el potasio al espacio intracelular",
-                "Eliminar el potasio por vía urinaria",
-                "Unirse al potasio en la luz intestinal",
-                "Inhibir los receptores de aldosterona"
+                "Promover la translocación transitoria de potasio al compartimento intracelular",
+                "Forzar la eliminación de potasio por vía urinaria",
+                "Fijar el potasio en la luz intestinal para su excreción fecal",
+                "Inhibir la reabsorción tubular de hidrogeniones"
               ],
               correct: 0,
-              detail: "La insulina activa la bomba sodio-potasio ATPasa celular, introduciendo el potasio del plasma hacia el interior celular de forma temporal sin variar el total corporal.",
-              distractors: "La insulina no elimina potasio del cuerpo por sí misma.",
+              detail: "La insulina activa la bomba Na+/K+ ATPasa, introduciendo potasio al citoplasma celular y reduciendo su concentración plasmática sin eliminarlo del cuerpo.",
+              distractors: "La insulina no excreta potasio fuera del organismo.",
               formula: "Insulina + Glucosa = Redistribución de K al interior celular, porque lo mete transitoriamente sin eliminarlo."
             },
             {
-              text: "El paciente entra en anuria con hiperpotasemia refractaria a fármacos y acidosis metabólica con pH 7,10. ¿Cuál es el tratamiento indicado?",
+              text: "El paciente evoluciona a anuria con hiperpotasemia refractaria a fármacos y acidosis metabólica con pH 7,10. ¿Cuál es la indicación urgente?",
               options: [
-                "Hemodiálisis / Terapia de reemplazo renal urgente",
-                "Administrar únicamente más gluconato de calcio",
-                "Bicarbonato oral y esperar 24 horas",
-                "Traslado a planta de medicina interna"
+                "Hemodiálisis / Terapia de reemplazo renal continua urgente",
+                "Administrar únicamente más dosis de gluconato de calcio",
+                "Pautar bicarbonato oral y esperar 24 horas",
+                "Trasladar a planta de hospitalización convencional"
               ],
               correct: 0,
-              detail: "Las indicaciones de diálisis urgente en fracaso renal agudo son hiperpotasemia refractaria, acidosis metabólica severa refractaria (pH < 7,15) y anuria.",
-              distractors: "Ningún fármaco sustituye a la diálisis en un paciente anúrico con hiperpotasemia severa.",
-              formula: "Anuria + Hiperpotasemia refractaria + Acidosis = Hemodiálisis urgente, porque es la única forma de eliminar físicamente el potasio."
+              detail: "Las indicaciones formales de diálisis de urgencia en el fracaso renal agudo son hiperpotasemia refractaria, acidosis metabólica severa refractaria (pH < 7,15) y anuria.",
+              distractors: "En anuria ningún fármaco es capaz de eliminar el exceso corporal de potasio.",
+              formula: "Anuria + Hiperpotasemia refractaria + Acidosis = Hemodiálisis urgente, porque es la única vía para eliminar físicamente el potasio del organismo."
             },
             {
               text: "¿Por qué el tratamiento antibiótico debe iniciarse precozmente y no postergarse?",
               options: [
                 "Porque cada hora de retraso antimicrobiano en shock séptico incrementa la mortalidad",
-                "Porque los antibióticos eliminan el cálculo ureteral mecánicamente",
-                "Porque los antibióticos calman el dolor lumbar de inmediato",
-                "Porque la prueba de imagen requiere cobertura antibiótica previa obligada"
+                "Porque los antibióticos eliminan mecánicamente la litiasis ureteral",
+                "Porque los antibióticos alivian el dolor lumbar de forma instantánea",
+                "Porque la ecografía renal requiere cobertura antibiótica previa obligatoria"
               ],
               correct: 0,
-              detail: "La evidencia clínica demuestra que la mortalidad por sepsis grave y shock séptico aumenta exponencialmente con cada hora de demora en la primera dosis.",
-              distractors: "Los antibióticos no disuelven la litiasis; frenan la replicación bacteriana y la cascada inflamatoria.",
+              detail: "La evidencia clínica demuestra que la mortalidad por sepsis grave y shock séptico aumenta exponencialmente con cada hora de retraso en la primera dosis antimicrobiana.",
+              distractors: "Los antibióticos no tienen propiedades mecánicas litiásicas.",
               formula: "Shock séptico + Demora de antibiótico = Mayor mortalidad, porque la replicación bacteriana masiva perpetúa la disfunción orgánica."
             },
             {
-              text: "¿Qué fenómeno hemodinámico caracteriza al shock séptico frente al shock hipovolémico?",
+              text: "¿Qué alteración hemodinámica caracteriza fisiopatológicamente al shock séptico frente al shock hipovolémico?",
               options: [
-                "Vasoplejía con disminución de resistencias vasculares sistémicas",
-                "Vasoconstricción arterial sistémica severa obligada",
-                "Aumento del volumen sanguíneo circulante",
-                "Ausencia de producción de lactato"
+                "Vasoplejía con marcada disminución de las resistencias vasculares sistémicas",
+                "Vasoconstricción arterial periférica compensadora máxima",
+                "Ausencia de producción de ácido láctico en tejidos",
+                "Aumento persistente del volumen circulante efectivo"
               ],
               correct: 0,
-              detail: "El shock distributivo séptico se define por relajación y pérdida de tono del músculo liso vascular secundaria a mediadores inflamatorios.",
-              distractors: "El shock hipovolémico responde con vasoconstricción compensatoria intensa.",
-              formula: "Shock séptico = Vasoplejía (caída de resistencias sistémicas), porque los mediadores inflamatorios relajan los vasos."
+              detail: "El shock distributivo séptico se define por relajación patológica del músculo liso vascular secundaria a mediadores inflamatorios y óxido nítrico.",
+              distractors: "El shock hipovolémico responde fisiológicamente con una intensa vasoconstricción periférica para mantener la presión.",
+              formula: "Shock séptico = Vasoplejía (caída de resistencias sistémicas), porque los mediadores inflamatorios relajan los vasos periféricos."
             },
             {
               text: "Tras la carga de volumen inicial de 30 mL/kg, ¿qué principio debe regir la fluidoterapia posterior?",
               options: [
-                "Reevaluar clínica y hemodinámicamente para evitar sobrecarga y edema tisular",
-                "Infundir sueros masivos continuos sin reevaluación",
-                "Suspender cualquier control hemodinámico",
+                "Reevaluar clínica y hemodinámicamente para individualizar y evitar edema y sobrecarga tisular",
+                "Infundir sueros masivos continuos a ritmo fijo sin reevaluar",
+                "Suspender toda monitorización hemodinámica",
                 "Administrar únicamente soluciones coloides hipertónicas"
               ],
               correct: 0,
-              detail: "El exceso de fluidos en sepsis se asocia a edema pulmonar y mayor mortalidad. La fluidoterapia debe ser individualizada y guiada por respuesta.",
-              distractors: "Infundir litros sin control una vez alcanzada la volemia daña la permeabilidad capilar.",
-              formula: "Fluidos en sepsis = Reanimación guiada por objetivos y tolerancia, porque el exceso de agua extravasada lesiona el pulmón."
+              detail: "El exceso de fluidos tras la fase inicial de resucitación empeora el intercambio pulmonar e incrementa la mortalidad; el aporte debe ser guiado por objetivos y respuesta.",
+              distractors: "Infundir litros indiscriminadamente daña la barrera alvéolo-capilar y perpetúa el fallo orgánico.",
+              formula: "Fluidos en sepsis = Reanimación guiada por objetivos y tolerancia, porque el exceso de volumen extravasado lesiona el pulmón y otros órganos."
             },
             {
-              text: "¿Qué ocurriría si se mantiene el tratamiento médico óptimo pero no se descomprime la vía urinaria?",
+              text: "¿Qué consecuencia clínica ocurriría si se mantuviera el tratamiento médico óptimo pero no se descomprimiera la vía urinaria?",
               options: [
-                "El foco cerrado mantendrá la bacteriemia y el shock refractario letal",
-                "El paciente se curará completamente solo con fármacos",
-                "La litiasis se disolverá espontáneamente en pocos minutos",
-                "El pronóstico no variará en absoluto"
+                "El foco infeccioso cerrado mantendría la bacteriemia y el shock refractario letal",
+                "El paciente se curaría completamente solo con fármacos en pocas horas",
+                "La litiasis se disolvería de forma espontánea",
+                "El pronóstico vital no variaría en absoluto"
               ],
               correct: 0,
-              detail: "En cualquier infección con foco cerrado a tensión (piouronefrosis), la descompresión mecánica es indispensable para la curación.",
-              distractors: "Los antibióticos no logran esterilizar una cavidad a presión con orina purulenta estancada.",
-              formula: "Sepsis sin control del foco = Fracaso terapéutico letal, porque no se puede apagar el fuego si la fuente sigue obstruida."
+              detail: "En cualquier infección con foco cerrado a tensión, la descompresión mecánica es condición sine qua non para controlar la sepsis y permitir la supervivencia.",
+              distractors: "Los antibióticos no logran esterilizar una cavidad urinaria a alta presión con orina infectada estancada.",
+              formula: "Sepsis sin control del foco = Fracaso terapéutico letal, porque no se puede controlar la infección si la fuente sigue obstruida a presión."
             }
           ];
 
-          return { id, category: "Infeccioso y Nefrourología", title, vignette, questions: rawQuestions };
+          return { id, clue: "Síndrome febril, dolor en flanco y fracaso renal agudo", title, vignette, questions };
         }
       },
+
+      // 3. ICTUS ISQUÉMICO DEL DESPERTAR / GRAN VASO / CÓDIGO ICTUS
       {
-        code: "ICTUS_WAKEUP",
-        category: "Neurología Urgente",
         topic: "NEURO",
-        generator: function() {
-          const names = ["Varón de 73 años", "Mujer de 70 años", "Varón de 68 años", "Mujer de 77 años"];
-          const pas = Math.floor(Math.random() * 25) + 170;
-          const pad = Math.floor(Math.random() * 15) + 95;
-          const id = "MUE-" + Math.floor(1000 + Math.random() * 9000);
+        clue: "Déficit neurológico focal agudo al despertar con afasia y hemiplejia",
+        generate: function() {
+          const gender = randomChoice(["M", "F"]);
+          const age = gender === "M" ? randomInt(67, 80) : randomInt(70, 84);
+          const name = `${gender === "M" ? "Varón" : "Mujer"} de ${age} años`;
+          const pas = randomInt(172, 196);
+          const pad = randomInt(94, 108);
+          const nihss = randomInt(17, 21);
+          const id = "MUE-" + randomInt(1100, 9990);
 
-          const title = `Caso ${id}: Código Ictus y Manejo del Wake-Up Stroke en Ventana Extendida`;
-          const vignette = `${names[Math.floor(Math.random()*names.length)]}, hipertenso con fibrilación auricular conocida no anticoagulada. Se acostó asintomático a las 23:30 h; al despertarse a las 08:15 h lo encuentra con imposibilidad para hablar y debilidad completa del hemicuerpo derecho. A la llegada del SEM (08:40 h): TA ${pas}/${pad} mmHg, FC 92 lpm arrítmica, glucemia capilar 118 mg/dl. Exploración: afasia global, desviación oculocefálica a la izquierda, hemiplejia derecha flácida. NIHSS: 19 puntos.`;
+          const title = `Caso Clínico #${id}: Paciente de ${age} años con déficit neurológico focal agudo detectado al despertar`;
+          const vignette = `${name}, hipertenso con antecedentes de fibrilación auricular conocida no anticoagulada. Se acostó asintomático a las 23:45 h; al despertarse su familia a las 08:15 h lo encuentran con imposibilidad para emitir lenguaje y parálisis completa de miembros derechos. A la llegada del equipo de emergencias (08:35 h): TA ${pas}/${pad} mmHg, FC 94 lpm arrítmica, glucemia capilar 118 mg/dL. Exploración neurológica inicial: afasia global (incapacidad para comprender y emitir lenguaje), desviación conjugada oculocefálica hacia la izquierda, hemiplejia derecha facio-braquio-crural flácida e hipoestesia severa ipsilateral. Puntuación en la escala NIHSS: ${nihss} puntos.`;
 
-          const rawQuestions = [
+          const questions = [
             {
-              text: "¿Cuál es la primera actuación prioritaria en el paciente con déficit neurológico agudo?",
+              text: "¿Cuál es la primera actuación prioritaria en el paciente con sospecha de déficit focal agudo?",
               options: [
-                "Activar Código Ictus, verificar glucemia y transferir a neuroimagen urgente",
+                "Activar Código Ictus, verificar glucemia capilar y transferir a neuroimagen urgente sin antitrombóticos previos",
                 "Administrar ácido acetilsalicílico 300 mg por vía oral",
-                "Iniciar heparina sódica en bolo intravenoso",
-                "Observar durante 6 horas para ver si remite el cuadro espontáneamente"
+                "Iniciar heparina sódica en bolo intravenoso inmediato",
+                "Observar en urgencias durante 6 horas para ver si el cuadro revierte espontáneamente"
               ],
               correct: 0,
-              detail: "La activación del Código Ictus permite despejar el escáner y movilizar al equipo multidisciplinar. La neuroimagen antes de cualquier fármaco antitrombótico es mandatoria.",
-              distractors: "Administrar aspirina o anticoagulantes antes de descartar hemorragia intracraneal con TC puede resultar letal.",
-              formula: "Déficit focal agudo = Código Ictus + TC craneal previo a antitrombóticos, porque si hay hemorragia cerebral el tratamiento es letal."
+              detail: "La activación del Código Ictus moviliza el circuito tiempo-dependiente. La neuroimagen es obligatoria antes de cualquier antitrombótico para descartar hemorragia intracraneal.",
+              distractors: "Administrar aspirina o anticoagulantes sin descartar sangrado intracraneal mediante TC puede resultar mortal si se trata de un ictus hemorrágico.",
+              formula: "Déficit focal agudo = Código Ictus + TC craneal previo a antitrombóticos, porque si hay hemorragia cerebral el tratamiento antitrombótico es letal."
             },
             {
-              text: "El TC descarta hemorragia y el Angio-TC demuestra oclusión de M1 izquierda. ¿Qué implicación tiene que sea un ictus del despertar?",
+              text: "El TC descarta hemorragia y el Angio-TC demuestra oclusión proximal de arteria cerebral media (M1 izquierda). ¿Qué implicación tiene que sea un ictus del despertar (wake-up stroke)?",
               options: [
-                "No excluye reperfusión; la neuroimagen avanzada puede seleccionar candidatos a trombectomía",
-                "Excluye automáticamente cualquier opción de tratamiento de reperfusión",
+                "No excluye reperfusión; la neuroimagen avanzada con criterios de viabilidad puede seleccionar candidatos a trombectomía mecánica",
+                "Excluye automáticamente cualquier opción de tratamiento de reperfusión por superar las 4,5 horas teóricas",
                 "Obliga a administrar heparina de bajo peso molecular en dosis doble",
-                "Permite el alta inmediata para consulta externa"
+                "Permite el alta inmediata para estudio en consulta externa de neurología"
               ],
               correct: 0,
-              detail: "Los ensayos clínicos demostraron que la presencia de tejido cerebral salvable (mismatch en TC perfusión o RM) permite rescatar pacientes en ventana extendida.",
-              distractors: "El criterio rígido de exclusión por horario ha sido superado por la selección basada en tejido viable.",
+              detail: "Los ensayos clínicos de ventana extendida demostraron que la presencia de tejido cerebral salvable (mismatch en neuroimagen avanzada) permite rescatar pacientes con oclusión de gran vaso.",
+              distractors: "El criterio rígido de exclusión temporal ha sido sustituido por la selección tisular basada en neuroimagen avanzada.",
               formula: "Wake-up stroke + Oclusión de gran vaso = Valorar trombectomía por neuroimagen avanzada, porque la penumbra isquémica puede seguir viva."
             },
             {
-              text: "Confirmada la presencia de tejido cerebral recuperable y oclusión proximal de M1, ¿cuál es el tratamiento definitivo de elección?",
+              text: "Confirmada la presencia de tejido recuperable y oclusión proximal de M1, ¿cuál es el tratamiento definitivo de elección?",
               options: [
                 "Trombectomía mecánica endovascular urgente",
-                "Esperar 24 horas y pautar antiagregantes",
+                "Esperar 24 horas y pautar antiagregantes plaquetarios",
                 "Doble antiagregación con clopidogrel y aspirina",
                 "Cardioversión eléctrica para revertir la fibrilación auricular"
               ],
               correct: 0,
-              detail: "En las oclusiones proximales de gran vaso intracraneal con penumbra recuperable, la trombectomía mecánica con stent retriever o aspiración es el tratamiento de máxima eficacia.",
-              distractors: "Los antiagregantes orales no tienen capacidad de disolver un gran trombo en la arteria cerebral media.",
+              detail: "En las oclusiones proximales de gran vaso intracraneal con penumbra recuperable, la trombectomía mecánica con stent retriever o aspiración es el tratamiento más eficaz.",
+              distractors: "Los antiagregantes orales no tienen capacidad para recanalizar un gran trombo oclusivo en la arteria cerebral media.",
               formula: "Oclusión de gran vaso (M1) + Criterios de viabilidad = Trombectomía Mecánica, porque extrae físicamente el trombo."
             },
             {
-              text: "Si se considerara fibrinolisis con rt-PA y la TA fuera de 218/118 mmHg, ¿cuál es la conducta correcta respecto a la presión arterial?",
+              text: "Si se considerara fibrinólisis intravenosa con rt-PA y la TA fuera de 215/115 mmHg, ¿cuál es la conducta correcta respecto a la presión arterial?",
               options: [
-                "Reducir controladamente la TA con labetalol o urapidilo a cifras < 185/110 mmHg",
-                "No hacer nada y administrar el fibrinolítico de inmediato",
+                "Reducir controladamente la TA con labetalol o urapidilo intravenoso a cifras < 185/110 mmHg",
+                "No actuar sobre la TA y administrar el fibrinolítico de inmediato",
                 "Descender bruscamente la TA a 100/60 mmHg con vasodilatadores potentes",
                 "Suspender el tratamiento de reperfusión de forma definitiva"
               ],
               correct: 0,
-              detail: "Para administrar rt-PA con seguridad, la TA debe situarse por debajo de 185/110 mmHg de forma controlada con fármacos IV.",
-              distractors: "Fibrinolisar con TA elevada dispara el riesgo de hemorragia cerebral mortal.",
+              detail: "Para administrar rt-PA con seguridad, la TA debe situarse por debajo de 185/110 mmHg de forma controlada mediante fármacos IV titulables como labetalol o urapidilo.",
+              distractors: "Fibrinolisar con TA por encima de dicho umbral dispara el riesgo de hemorragia cerebral fatal.",
               formula: "rt-PA + TA > 185/110 mmHg = Bajar TA de forma controlada antes de la infusión, porque previene la transformación hemorrágica."
             },
             {
-              text: "Tras la reperfusión, el paciente presenta cefalea brusca intensa, vómitos y caída de 4 puntos en el Glasgow. ¿Qué complicación debe sospecharse prioritariamente?",
+              text: "Tras la reperfusión, el paciente presenta cefalea brusca intensa, vómitos y caída de 4 puntos en la escala de Glasgow. ¿Qué complicación debe sospecharse prioritariamente?",
               options: [
                 "Transformación hemorrágica intracraneal",
                 "Migraña con aura acompañante",
                 "Sinusitis esfenoidal aguda",
-                "Neuropatía periférica facial"
+                "Neuropatía periférica facial benigna"
               ],
               correct: 0,
-              detail: "Cualquier deterioro neurológico brusco tras tratamiento de reperfusión en ictus obliga a realizar un TC craneal sin contraste inmediato para descartar hemorragia.",
-              distractors: "Atribuir el deterioro a migraña o sinusitis retrasa el manejo de una hemorragia cerebral aguda.",
+              detail: "Cualquier deterioro neurológico brusco tras tratamiento de reperfusión en ictus obliga a realizar un TC craneal sin contraste urgente para descartar hemorragia intracraneal.",
+              distractors: "Atribuir el deterioro a migraña retrasa el diagnóstico de un hematoma cerebral que requiere reversión inmediata.",
               formula: "Deterioro neurológico posreperfusión en ictus = TC urgente para descartar Hemorragia, porque el sangrado cerebral exige revertir antitrombóticos."
             },
             {
-              text: "Si la glucemia capilar hubiera sido de 32 mg/dl al ingreso, ¿cuál habría sido la conducta inmediata?",
+              text: "Si la glucemia capilar hubiera sido de 32 mg/dL a la llegada del equipo, ¿cuál habría sido la conducta inmediata?",
               options: [
                 "Administrar glucosa intravenosa inmediata y reevaluar la focalidad",
-                "Ignorar la cifra de glucosa y realizar trombectomía",
+                "Ignorar la cifra de glucosa y activar sala de angiografía",
                 "Pautar ácido acetilsalicílico",
-                "Iniciar insulina rápida"
+                "Iniciar insulina regular"
               ],
               correct: 0,
-              detail: "La hipoglucemia es un imitador clásico del ictus (stroke mimic) que puede provocar hemiplejia y afasia transitorias que revierten rápidamente al corregir la glucosa.",
-              distractors: "Someter a intervencionismo a un paciente que solo sufre hipoglucemia es una negligencia evitable.",
+              detail: "La hipoglucemia es un imitador clásico del ictus (stroke mimic) que puede cursar con focalidad motora y afasia reversibles de forma inmediata con glucosa.",
+              distractors: "Someter a intervencionismo a un paciente cuya causa es neuroglucopenia supone un error grave de la fase diagnóstica inicial.",
               formula: "Focalidad neurológica + Glucemia baja = Glucosa IV primero, porque la neuroglucopenia imita un ictus pero se cura al normalizar el azúcar."
             },
             {
-              text: "¿Qué papel desempeña la fibrilación auricular no anticoagulada en este caso?",
+              text: "¿Qué papel desempeña la fibrilación auricular no anticoagulada en la etiología de este evento?",
               options: [
-                "Es la fuente cardioembólica primaria más probable del trombo",
-                "Excluye que el paciente pueda padecer un ictus",
-                "Obliga a administrar adenosina en bolo urgente",
-                "No tiene relación patogénica con el cuadro"
+                "Constituye la fuente cardioembólica primaria más probable del trombo",
+                "Excluye que el paciente pueda presentar un ictus",
+                "Obliga a administrar adenosina en bolo rápido",
+                "No guarda relación patogénica alguna con el cuadro"
               ],
               correct: 0,
-              detail: "La estasis sanguínea en la aurícula izquierda durante la FA favorece la formación de trombos que embolizan al territorio carotídeo cerebral.",
-              distractors: "La FA es responsable de uno de cada cuatro ictus isquémicos.",
+              detail: "La estasis sanguínea en la orejuela de la aurícula izquierda durante la FA propicia la formación de trombos que embolizan hacia el territorio carotídeo cerebral.",
+              distractors: "La FA es responsable de aproximadamente uno de cada cuatro ictus isquémicos en la población general.",
               formula: "Fibrilación auricular sin anticoagular = Fuente cardioembólica de ictus, porque el trombo formado en la aurícula viaja al cerebro."
             },
             {
-              text: "¿Por qué no se debe administrar aspirina antes de realizar el TC craneal?",
+              text: "¿Por qué no se debe administrar ácido acetilsalicílico antes de realizar el TC craneal?",
               options: [
-                "Porque si el ictus fuera hemorrágico aumentaría la hemorragia intracraneal",
-                "Porque la aspirina no tiene efecto antitrombótico",
+                "Porque si el ictus fuera hemorrágico incrementaría la hemorragia intracraneal",
+                "Porque la aspirina carece de efecto sobre las plaquetas",
                 "Porque la aspirina debe tomarse siempre con protectores gástricos durante 48 horas",
                 "Porque la aspirina es la prueba diagnóstica que confirma el ictus"
               ],
               correct: 0,
-              detail: "Hasta un 20% de los accidentes cerebrovasculares son hemorrágicos. Administrar antiagregantes a ciegas agrava el hematoma y el riesgo vital.",
-              distractors: "La clínica neurológica no permite diferenciar con certeza infarto de hemorragia sin imagen.",
+              detail: "Hasta un 15-20% de los accidentes cerebrovasculares son hemorrágicos; administrar antiagregantes a ciegas agrava el hematoma intracraneal y el riesgo de muerte.",
+              distractors: "La exploración clínica aislada no permite distinguir con total certeza infarto de hemorragia sin una prueba de imagen.",
               formula: "Sospecha de Ictus + Sin TC = No dar Aspirina ni Heparina, porque si hay un vaso roto en el cerebro los antiagregantes empeoran la hemorragia."
             },
             {
-              text: "Una puntuación NIHSS de 19 puntos refleja:",
+              text: "Una puntuación en la escala NIHSS de " + nihss + " puntos refleja clínicamente:",
               options: [
                 "Un déficit neurológico severo",
                 "Una contraindicación absoluta para trombectomía",
@@ -971,216 +1047,224 @@
                 "La ausencia de lesión cerebral significativa"
               ],
               correct: 0,
-              detail: "El NIHSS cuantifica el deterioro neurológico. Valores superiores a 15-16 reflejan daño cerebral grave con alta sospecha de oclusión de gran vaso arterial.",
-              distractors: "Un NIHSS alto no contraindica la trombectomía; al contrario, es el grupo que más se beneficia.",
+              detail: "El NIHSS cuantifica la gravedad del déficit neurológico; puntuaciones superiores a 15-16 traducen daño cerebral severo con alta sospecha de oclusión de gran vaso.",
+              distractors: "Un NIHSS alto no contraindica el intervencionismo; al contrario, es el grupo que obtiene mayor beneficio relativo de la recanalización.",
               formula: "NIHSS > 15 = Déficit neurológico grave por gran vaso, porque refleja afectación motora, de lenguaje y cortical extensa."
             },
             {
               text: "¿Por qué es crucial determinar con exactitud la 'última vez que fue visto bien'?",
               options: [
-                "Es el punto de partida cronológico para el cálculo de las ventanas terapéuticas",
-                "Es un trámite administrativo sin repercusión terapéutica",
+                "Es el punto de referencia cronológico para el cálculo de las ventanas terapéuticas",
+                "Es un trámite meramente administrativo sin implicación asistencial",
                 "Permite calcular la dosis del anticoagulante",
-                "Determina si el paciente es diabético o no"
+                "Determina si el paciente padece hipertensión o diabetes"
               ],
               correct: 0,
-              detail: "En pacientes con ictus al despertar, la ventana de seguridad de los fármacos y procedimientos se calcula siempre desde la última hora en que se confirmó que estaba sano.",
-              distractors: "No se toma la hora de despertar como hora de inicio porque el ictus pudo haber ocurrido antes.",
+              detail: "En pacientes con ictus al despertar, la ventana de seguridad de los fármacos y procedimientos se calcula siempre desde la última hora en que se confirmó que estaba asintomático.",
+              distractors: "No se toma la hora del despertar como hora de inicio porque el ictus pudo haber ocurrido antes durante el sueño.",
               formula: "Ictus al despertar = La hora cero es la última vez visto bien, porque es el momento a partir del cual el tejido comenzó la isquemia."
             },
             {
-              text: "Si el TC craneal inicial hubiera mostrado un hematoma intraparenquimatoso extenso, ¿cuál sería la conducta?",
+              text: "Si el TC craneal inicial hubiera evidenciado un hematoma intraparenquimatoso con efecto masa, ¿cuál sería la conducta?",
               options: [
                 "Manejo específico de hemorragia cerebral: control estricto de TA, valorar neurocirugía y neuroprotección",
-                "Administrar rt-PA intravenoso de inmediato",
-                "Indicar trombectomía mecánica urgente",
+                "Administrar rt-PA intravenoso a dosis plenas",
+                "Indicar trombectomía mecánica de rescate",
                 "Iniciar ácido acetilsalicílico 500 mg intravenoso"
               ],
               correct: 0,
-              detail: "El ictus hemorrágico requiere un algoritmo opuesto: suspender antitrombóticos, controlar la tensión arterial y consultar con Neurocirugía.",
-              distractors: "Los fármacos de reperfusión isquémica están contraindicados ante hemorragia.",
+              detail: "El ictus hemorrágico requiere un algoritmo opuesto: suspender todo antitrombótico, controlar la presión arterial y consultar con Neurocirugía.",
+              distractors: "Los fármacos de reperfusión isquémica están estrictamente contraindicados ante hemorragia activa.",
               formula: "TC con hematoma intraparenquimatoso = Tratamiento de Hemorragia Cerebral, porque los fármacos de reperfusión son letales ante un vaso sangrante."
             },
             {
-              text: "Durante la evolución en urgencias el paciente inicia crisis convulsiva focal motora de 6 minutos de duración. ¿Qué diagnóstico y tratamiento procede?",
+              text: "Durante su estancia en urgencias el paciente presenta una crisis convulsiva tónico-clónica generalizada de 6 minutos de duración. ¿Qué diagnóstico y tratamiento procede?",
               options: [
                 "Status epiléptico: benzodiacepina IV inmediata y fármaco antiepiléptico de segunda línea",
-                "Reacción conversiva: esperar 30 minutos sin tratamiento",
+                "Crisis conversiva: esperar 30 minutos sin tratamiento",
                 "Cefalea tensional: analgesia oral",
                 "Dar el alta por presentar mejoría motora"
               ],
               correct: 0,
-              detail: "Toda crisis de > 5 min es un status convulsivo que incrementa el daño cerebral por aumento de la demanda metabólica. Requiere diazepam/clonazepam IV.",
-              distractors: "Las crisis agudas en ictus consumen oxígeno en la zona de penumbra y aceleran la necrosis.",
+              detail: "Toda crisis comicial que supera los 5 minutos debe tratarse activamente como un status epiléptico con benzodiacepinas IV (diazepam/clonazepam) seguidas de un anticomicial de segunda línea (levetiracetam o valproato).",
+              distractors: "Las crisis agudas prolongadas consumen oxígeno en la zona de penumbra y aumentan la extensión del infarto.",
               formula: "Crisis comicial > 5 minutos = Tratar como Status (Benzodiacepina + Anticomicial IV), porque el consumo metabólico destruye el cerebro isquémico."
             },
             {
-              text: "El nivel de conciencia se deteriora hasta Glasgow 7 con pérdida de reflejos protectores de la vía aérea. ¿Qué actuación está indicada?",
+              text: "El nivel de conciencia se deteriora hasta Glasgow 7 con pérdida de reflejos protectores faríngeos. ¿Qué actuación está indicada?",
               options: [
                 "Intubación orotraqueal para aislamiento y protección definitiva de la vía aérea",
                 "Gafas nasales a 2 litros por minuto exclusivamente",
-                "Forzar la ingesta oral de líquidos",
+                "Forzar la ingesta oral de líquidos azucarados",
                 "Ventilación mecánica no invasiva con mascarilla facial"
               ],
               correct: 0,
-              detail: "Un Glasgow ≤ 8 en patología neurológica aguda conlleva incapacidad para proteger la vía aérea y riesgo crítico de broncoaspiración y muerte.",
-              distractors: "La VNI está contraindicada en pacientes comatosos o sin reflejos protectores.",
+              detail: "Un Glasgow ≤ 8 en patología neurológica aguda conlleva pérdida de reflejos protectores y riesgo crítico de broncoaspiración masiva, requiriendo intubación orotraqueal.",
+              distractors: "La VNI está formalmente contraindicada en pacientes comatosos sin reflejos de deglución o tos.",
               formula: "Glasgow ≤ 8 en ictus = Intubación Orotraqueal (Vía Aérea Definitiva), porque previene la broncoaspiración masiva y asegura oxigenación."
             },
             {
-              text: "¿Cuándo se debe reiniciar o iniciar la anticoagulación oral definitiva en este paciente con fibrilación auricular?",
+              text: "¿Cuándo se debe iniciar la anticoagulación oral definitiva en este paciente con fibrilación auricular tras un infarto extenso?",
               options: [
-                "De forma diferida según el tamaño del infarto, riesgo de sangrado y evolución clínica",
+                "De forma diferida según el tamaño del infarto, riesgo de sangrado y evolución clínica en neuroimagen",
                 "Queda formalmente contraindicada para siempre",
-                "En el minuto cero mediante un bolo de heparina intravenosa",
-                "Sustituyendo permanentemente a cualquier intento de reperfusión"
+                "En el minuto cero mediante un bolo de heparina sódica intravenosa",
+                "Sustituyendo permanentemente a cualquier intento de reperfusión mecánica"
               ],
               correct: 0,
-              detail: "En infartos cerebrales extensos la anticoagulación precoz se pospone días o semanas para evitar una transformación hemorrágica secundaria.",
-              distractors: "Anticoagular en las primeras horas tras un infarto extenso multiplica el riesgo de hemorragia fatal.",
+              detail: "En infartos cerebrales extensos, la anticoagulación precoz se pospone varios días para evitar una transformación hemorrágica secundaria del tejido isquémico friable.",
+              distractors: "Anticoagular en las primeras horas tras un infarto extenso incrementa notablemente el riesgo de hemorragia fatal.",
               formula: "FA + Ictus isquémico extenso = Anticoagular de forma diferida, porque el tejido infartado friable sangra si se anticoagula precozmente."
             },
             {
-              text: "¿Cuál es la ubicación de ingreso adecuada tras la trombectomía mecánica?",
+              text: "¿Cuál es la ubicación de ingreso adecuada tras la realización de la trombectomía mecánica?",
               options: [
                 "Unidad de Ictus o Unidad de Cuidados Intensivos",
-                "Alta al domicilio",
-                "Planta de hospitalización sin monitorización",
-                "Centro de crónicos ambulatorio"
+                "Alta al domicilio con tratamiento ambulatorio",
+                "Planta de hospitalización general sin monitorización",
+                "Centro de media estancia para convalecientes"
               ],
               correct: 0,
-              detail: "El paciente post-trombectomía requiere monitorización neurológica y hemodinámica continua y estrecha para vigilar la recanalización y detectar complicaciones.",
-              distractors: "El riesgo de reoclusión o edema cerebral en las primeras 24-48 horas exige vigilancia especializada continua.",
+              detail: "El paciente post-trombectomía requiere monitorización neurológica y hemodinámica continua durante las primeras 24-48 horas para vigilar la recanalización y detectar complicaciones precozmente.",
+              distractors: "El riesgo de reoclusión o edema cerebral requiere cuidados especializados de Unidad de Ictus.",
               formula: "Paciente post-reperfusión cerebral = Unidad de Ictus / UCI, porque la detección precoz del edema o resangrado permite actuar a tiempo."
             }
           ];
 
-          return { id, category: "Neurología Urgente", title, vignette, questions: rawQuestions };
+          return { id, clue: "Déficit neurológico focal agudo al despertar con afasia y hemiplejia", title, vignette, questions };
         }
       },
+
+      // 4. TROMBOEMBOLISMO PULMONAR DE ALTO RIESGO / SHOCK OBSTRUCTIVO
       {
-        code: "TEP_MASIVO",
-        category: "Respiratorio y Shock Obstructivo",
         topic: "RESP",
-        generator: function() {
-          const names = ["Mujer de 54 años", "Varón de 61 años", "Mujer de 66 años", "Varón de 58 años"];
-          const context = ["intervenida de prótesis total de cadera hace 10 días", "con neoplasia de mama en tratamiento activo", "inmovilizado en domicilio tras fractura de tobillo"];
-          const pas = Math.floor(Math.random() * 12) + 72;
-          const pad = Math.floor(Math.random() * 8) + 42;
-          const fc = Math.floor(Math.random() * 16) + 124;
-          const fr = Math.floor(Math.random() * 6) + 30;
-          const id = "MUE-" + Math.floor(1000 + Math.random() * 9000);
+        clue: "Disnea súbita, síncope, hipotensión refractaria e ingurgitación yugular",
+        generate: function() {
+          const gender = randomChoice(["M", "F"]);
+          const age = gender === "M" ? randomInt(52, 76) : randomInt(56, 80);
+          const name = `${gender === "M" ? "Varón" : "Mujer"} de ${age} años`;
+          const context = randomChoice([
+            "intervenido de artroplastia total de cadera hace 12 días",
+            "con neoplasia activa en tratamiento quimioterápico",
+            "con fractura de tobillo inmovilizada con férula hace 2 semanas"
+          ]);
+          const pas = randomInt(74, 86);
+          const pad = randomInt(42, 52);
+          const hr = randomInt(122, 138);
+          const rr = randomInt(28, 36);
+          const sat = randomInt(82, 87);
+          const id = "MUE-" + randomInt(1100, 9990);
 
-          const title = `Caso ${id}: Tromboembolismo Pulmonar de Alto Riesgo con Shock Obstructivo`;
-          const vignette = `${names[Math.floor(Math.random()*names.length)]}, ${context[Math.floor(Math.random()*context.length)]}. Sufre disnea súbita e intensa en reposo seguida de síncope con recuperación incompleta. A su llegada en UME: TA ${pas}/${pad} mmHg, FC ${fc} lpm rítmica, FR ${fr} rpm, SatO2 84% con aire ambiente. Sudoroso, frío, ingurgitación yugular y auscultación pulmonar limpia. ECG: taquicardia sinusal con patrón S1Q3T3 y ondas T negativas en V1-V4.`;
+          const title = `Caso Clínico #${id}: Paciente de ${age} años con disnea súbita e inestabilidad hemodinámica`;
+          const vignette = `${name}, ${context}. Presenta disnea súbita e intensa en reposo seguida de síncope con recuperación incompleta en su domicilio. A la llegada de la UME y traslado al Box de Críticos: TA ${pas}/${pad} mmHg, FC ${hr} lpm rítmica, FR ${rr} rpm, SatO2 ${sat}% con aire ambiente. A la exploración física: paciente pálido, frío, sudoroso y angustiado. Ingurgitación yugular bilateral evidente hasta el ángulo mandibular a 45º. Auscultación cardiaca: taquicardia rítmica con refuerzo del segundo tono en foco pulmonar y ausencia de soplos. Auscultación pulmonar: murmullo vesicular conservado bilateralmente, completamente limpio sin estertores ni sibilancias. Extremidades sin edemas asimétricos marcados pero con frialdad distal. ECG: taquicardia sinusal a ${hr} lpm con patrón S1Q3T3 e inversión de ondas T en derivaciones precordiales derechas (V1 a V3).`;
 
-          const rawQuestions = [
+          const questions = [
             {
-              text: "¿Cuál es el diagnóstico sindrómico inmediato ante este cuadro?",
+              text: "¿Cuál es el diagnóstico sindrómico inmediato ante la clínica y hallazgos descritos?",
               options: [
-                "TEP de alto riesgo hemodinámico (shock obstructivo)",
-                "Neumonía comunitaria típica bacteriana",
-                "EAP cardiogénico por fallo izquierdo",
+                "Tromboembolismo pulmonar de alto riesgo hemodinámico (shock obstructivo)",
+                "Neumonía comunitaria típica bacteriana en lóbulo medio",
+                "Edema agudo de pulmón cardiogénico por fallo de ventrículo izquierdo",
                 "Crisis asmática leve hiperreactiva"
               ],
               correct: 0,
-              detail: "La presencia de disnea brusca, factores de riesgo trombótico, signos de sobrecarga ventricular derecha aguda e inestabilidad hemodinámica define el TEP de alto riesgo.",
-              distractors: "La neumonía y el EAP cursan con semiología auscultatoria pulmonar florida.",
+              detail: "La combinación de disnea brusca, factores de riesgo trombótico previos, signos de sobrecarga derecha aguda e hipotensión arterial persistente define el TEP de alto riesgo.",
+              distractors: "La neumonía y el edema agudo de pulmón cursan con semiología auscultatoria pulmonar bilateral florida (crepitantes abundantes).",
               formula: "Disnea súbita + Hipotensión persistente + Signos de sobrecarga de VD = TEP de Alto Riesgo, porque el trombo masivo colapsa la circulación."
             },
             {
-              text: "¿Cuál es la utilidad de solicitar un Dímero-D urgente en este paciente inestable?",
+              text: "¿Cuál es la utilidad de solicitar un Dímero-D urgente en este paciente inestable con shock?",
               options: [
-                "Nula; en alta probabilidad y shock el dímero-D no aporta y retrasa decisiones",
-                "Esencial para confirmar el tromboembolismo antes de tratar",
+                "Nula; en alta probabilidad clínica y shock el dímero-D no aporta y retrasa decisiones terapéuticas críticas",
+                "Esencial para confirmar el tromboembolismo antes de cualquier fármaco",
                 "Obligatorio para calcular la dosis de heparina",
                 "Permite suspender la oxigenoterapia de inmediato"
               ],
               correct: 0,
-              detail: "El dímero-D solo tiene valor predictivo negativo en pacientes estables. En shock o alta probabilidad clínica no debe solicitarse.",
-              distractors: "Esperar el resultado del dímero-D en un paciente en shock obstructivo con riesgo vital inminente es un error.",
+              detail: "El dímero-D tiene un alto valor predictivo negativo solo en pacientes estables con baja o intermedia probabilidad. En shock o alta probabilidad su solicitud retrasa decisiones que salvan la vida.",
+              distractors: "Esperar el resultado del dímero-D en un paciente en shock obstructivo con riesgo vital inminente es un error de bulto.",
               formula: "TEP con Shock o Alta Probabilidad = NO pedir Dímero-D, porque su valor es solo de exclusión en pacientes estables."
             },
             {
-              text: "El paciente está demasiado inestable para ser trasladado a la sala de TC. ¿Qué prueba a pie de cama orienta el tratamiento de reperfusión?",
+              text: "El paciente se encuentra hemodinámicamente inestable e inseguro para traslado a sala de TC. ¿Qué prueba a pie de cama orienta el tratamiento de reperfusión?",
               options: [
-                "Ecocardiograma / POCUS buscando sobrecarga y fallo de VD",
+                "Ecocardiograma transtorácico / POCUS cardiaco buscando signos de sobrecarga de VD",
                 "Radiografía de tórax en dos proyecciones",
                 "Prueba de esfuerzo en cicloergómetro",
                 "Gammagrafía de ventilación-perfusión ambulatoria"
               ],
               correct: 0,
-              detail: "En TEP inestable, la ecocardiografía que demuestra signos de sobrecarga aguda de VD autoriza a iniciar reperfusión inmediata sin traslado a TC.",
-              distractors: "Mover a un paciente en shock refractario fuera del área de críticos para un TC es inseguro.",
+              detail: "En el TEP inestable, la ecocardiografía que demuestra signos de disfunción o sobrecarga aguda de cavidades derechas autoriza a iniciar reperfusión inmediata sin necesidad de traslado a TC.",
+              distractors: "Mover a un paciente en shock refractario fuera del área de críticos para un TC es inseguro y desaconsejado.",
               formula: "TEP inestable + TC inseguro = POCUS cardiaco urgente (Sobrecarga de VD), porque objetivar disfunción derecha permite fibrinólisis inmediata."
             },
             {
               text: "¿Cuál es el tratamiento de reperfusión de primera elección en el TEP de alto riesgo sin contraindicaciones?",
               options: [
-                "Fibrinólisis sistémica inmediata (rt-PA / tenecteplasa)",
-                "Ácido acetilsalicílico 300 mg oral exclusivo",
-                "Observación durante 48 horas con sueros",
+                "Fibrinólisis sistémica intravenosa inmediata (rt-PA / tenecteplasa)",
+                "Ácido acetilsalicílico 300 mg por vía oral",
+                "Observación durante 48 horas exclusivamente con fluidos",
                 "Diuréticos de asa a dosis elevadas"
               ],
               correct: 0,
-              detail: "El TEP de alto riesgo cursa con mortalidad > 30% a corto plazo. La fibrinólisis intravenosa lisa el coágulo en minutos y restaura la perfusión coronaria del VD.",
-              distractors: "La aspirina no disuelve trombos masivos pulmonares.",
+              detail: "El TEP de alto riesgo cursa con mortalidad superior al 30% a corto plazo; la fibrinólisis sistémica disuelve rápidamente la masa obstructiva y restaura la función del VD.",
+              distractors: "La aspirina no disuelve trombos masivos en la arteria pulmonar.",
               formula: "TEP + Shock hemodinámico = Fibrinólisis Sistémica Urgente, porque destruye la masa obstructiva en el tronco pulmonar."
             },
             {
               text: "Si se precisa soporte vasopresor por persistencia de PAM < 65 mmHg, ¿qué fármaco es de elección?",
               options: [
-                "Noradrenalina en perfusión intravenosa",
+                "Noradrenalina en perfusión intravenosa continua",
                 "Dobutamina en monoterapia a dosis altas",
                 "Furosemida intravenosa en bolo",
                 "Nitroglicerina en infusión continua"
               ],
               correct: 0,
-              detail: "La noradrenalina restaura la presión de perfusión coronaria del ventrículo derecho sin producir vasodilatación excesiva.",
-              distractors: "La dobutamina aislada produce vasodilatación y agrava la hipotensión.",
+              detail: "La noradrenalina restaura la presión de perfusión coronaria del ventrículo derecho sin vasodilatación sistémica excesiva.",
+              distractors: "La dobutamina en monoterapia produce vasodilatación periférica y empeoraría la hipotensión arterial.",
               formula: "Shock en TEP masivo = Noradrenalina, porque sube la presión aórtica y permite que la coronaria derecha vuelva a perfundir el VD."
             },
             {
-              text: "¿Por qué debe evitarse la sobrecarga agresiva de volumen con fluidos en el fallo agudo de VD?",
+              text: "¿Por qué debe evitarse la sobrecarga agresiva de volumen con fluidos en el fallo agudo del ventrículo derecho?",
               options: [
-                "Porque dilata excesivamente el VD, desplaza el septo y colapsa el ventrículo izquierdo",
+                "Porque dilata excesivamente el VD, desplaza el tabique interventricular y colapsa el llenado del VI",
                 "Porque los sueros aumentan la agregación plaquetaria",
                 "Porque el líquido se acumula exclusivamente en la vejiga",
                 "Porque neutraliza la acción de los fármacos anticoagulantes"
               ],
               correct: 0,
-              detail: "El ventrículo derecho tiene una curva de Frank-Starling muy estrecha; infundir litros produce dilatación excesiva, isquemia miocárdica derecha y compresión del VI.",
-              distractors: "En el TEP se recomiendan bolos moderados (≤ 500 mL) y no sobrecargas masivas.",
+              detail: "El ventrículo derecho tiene una curva de distensibilidad estrecha; volúmenes masivos provocan abombamiento septal hacia la izquierda (interdependencia ventricular) y caída fatal del gasto cardíaco.",
+              distractors: "En el TEP se recomiendan bolos prudentes (≤ 500 mL) y nunca sobrecargas de varios litros.",
               formula: "Sobrecarga de volumen masiva + Fallo agudo de VD = Interdependencia ventricular negativa y Shock, porque el tabique ahoga al VI."
             },
             {
-              text: "El paciente entra en parada cardiaca con ritmo de Actividad Eléctrica Sin Pulso. ¿Qué causa de las 4T representa este evento?",
+              text: "El paciente sufre deterioro brusco entrando en parada cardiaca con ritmo de Actividad Eléctrica Sin Pulso. ¿Qué causa de las 4T representa este evento?",
               options: [
                 "Trombosis pulmonar masiva",
-                "Taponamiento cardiaco bacteriano",
-                "Neumotórax traumático",
-                "Toxicidad por litio"
+                "Taponamiento cardiaco infeccioso",
+                "Neumotórax a tensión traumático",
+                "Toxicidad farmacológica por litio"
               ],
               correct: 0,
-              detail: "El TEP masivo es una causa clásica de parada en AESP por obstrucción mecánica del flujo de salida del ventrículo derecho (Trombosis pulmonar).",
-              distractors: "El taponamiento y el neumotórax son otras 'T', pero en este caso el cuadro clínico documentado es TEP.",
+              detail: "El TEP masivo es una causa clásica de parada cardiaca en AESP por obstrucción mecánica del flujo pulmonar (la T de Trombosis).",
+              distractors: "Aunque el taponamiento y el neumotórax son otras 'T', el cuadro clínico corresponde a trombosis pulmonar.",
               formula: "AESP en paciente con factores de trombosis = Sospecha de TEP Masivo (4T: Trombosis), requiriendo RCP y valorar fibrinólisis intra-parada."
             },
             {
-              text: "Si se administra fibrinólisis durante la parada cardiaca por sospecha de TEP, ¿cuánto tiempo debe prolongarse la RCP?",
+              text: "Si se administra fibrinólisis durante la parada cardiaca por sospecha fundada de TEP, ¿cuánto tiempo debe mantenerse la RCP?",
               options: [
-                "Al menos 60 a 90 minutos para permitir la acción del fármaco",
-                "Máximo 10 minutos por futilidad",
+                "Al menos 60 a 90 minutos para permitir la acción lítica del fármaco",
+                "Máximo 10 minutos por considerarse fútil",
                 "Suspender inmediatamente tras administrar la dosis",
                 "Exactamente 5 minutos cronometrados"
               ],
               correct: 0,
-              detail: "Las guías de soporte vital avanzado recomiendan mantener la RCP durante al menos 60 a 90 minutos tras la infusión del fibrinolítico para permitir que actúe.",
-              distractors: "Suspender la RCP prematuramente impide que el fármaco penetre en el trombo pulmonar.",
+              detail: "Las guías de soporte vital avanzado del ERC recomiendan mantener las maniobras de RCP durante 60-90 minutos tras la infusión del fibrinolítico para permitir su acción lítica en circulación asistida.",
+              distractors: "Suspender la reanimación prematuramente impide que el fármaco circule y actúe sobre el émbolo pulmonar.",
               formula: "Fibrinólisis en PCR por TEP = RCP prolongada (60-90 minutos), porque el fármaco necesita tiempo de circulación asistida para lisar el émbolo."
             },
             {
-              text: "¿Cuál es el patrón electrocardiográfico más frecuente en el TEP, independientemente del clásico S1Q3T3?",
+              text: "¿Cuál es el hallazgo electrocardiográfico más frecuente en el TEP en la práctica clínica?",
               options: [
                 "Taquicardia sinusal",
                 "Fibrilación ventricular primaria",
@@ -1188,12 +1272,12 @@
                 "Bloqueo sinoauricular de tercer grado"
               ],
               correct: 0,
-              detail: "Aunque el patrón S1Q3T3 es el más conocido, la alteración electrocardiográfica más habitual en el TEP es la taquicardia sinusal.",
-              distractors: "La taquicardia sinusal refleja la respuesta adrenérgica ante la caída del gasto cardiaco.",
+              detail: "Aunque el patrón S1Q3T3 es el más conocido, la alteración electrocardiográfica más habitual en el TEP es la taquicardia sinusal reactiva.",
+              distractors: "La taquicardia sinusal traduce la descarga simpática refleja ante la disminución del gasto cardíaco.",
               formula: "ECG en TEP = Taquicardia sinusal (lo más frecuente), mientras que el S1Q3T3 es un signo específico de sobrecarga de VD."
             },
             {
-              text: "Si el paciente tuviera una hemorragia intracraneal activa confirmada y mantuviera shock por TEP masivo, ¿qué alternativa terapéutica se plantea?",
+              text: "Si el paciente presentara una hemorragia intracraneal activa confirmada y mantuviera shock por TEP masivo, ¿qué alternativa terapéutica se plantea?",
               options: [
                 "Tratamiento percutáneo endovascular (trombectomía mecánica / embolectomía quirúrgica)",
                 "Administrar rt-PA a doble dosis habitual",
@@ -1201,60 +1285,60 @@
                 "Alta al domicilio con reposo absoluto"
               ],
               correct: 0,
-              detail: "Ante contraindicación absoluta de fibrinólisis sistémica en TEP masivo inestable, las opciones son la embolectomía quirúrgica o la trombectomía percutánea.",
-              distractors: "La fibrinólisis está prohibida si hay sangrado intracraneal activo.",
+              detail: "Ante contraindicación absoluta de fibrinólisis sistémica en TEP con shock, las alternativas de rescate son la embolectomía quirúrgica o las técnicas de trombectomía percutánea por catéter.",
+              distractors: "La fibrinólisis está terminantemente prohibida ante sangrado intracraneal activo.",
               formula: "TEP con Shock + Contraindicación de Fibrinólisis = Trombectomía Mecánica / Embolectomía, porque se extrae físicamente el trombo."
             },
             {
-              text: "¿Qué parámetro gasométrico arterial inicial es típico en el embolismo pulmonar agudo?",
+              text: "¿Qué patrón en la gasometría arterial es típico en la fase inicial del embolismo pulmonar agudo?",
               options: [
                 "Hipoxemia con hipocapnia y alcalosis respiratoria",
                 "Hipercapnia severa con acidosis respiratoria pura",
                 "Normoxemia con acidosis metabólica láctica pura inicial",
-                "Alcalosis metabólica hipoclorémica con potasio elevado"
+                "Alcalosis metabólica pura con bicarbonato elevado"
               ],
               correct: 0,
-              detail: "El aumento del espacio muerto alveolar y la estimulación de los receptores de distensión inducen taquipnea refleja, provocando hipoxemia con hipocapnia.",
-              distractors: "La hipercapnia solo aparece en fases terminales de agotamiento ventilatorio extremo.",
+              detail: "El aumento del espacio muerto y la estimulación de mecanorreceptores provocan hiperventilación refleja, induciendo hipoxemia con hipocapnia y alcalosis respiratoria.",
+              distractors: "La hipercapnia solo aparece en fases terminales de agotamiento muscular ventilatorio extremo.",
               formula: "GAB en TEP = Hipoxemia + Hipocapnia, porque la hiperventilación reactiva elimina dióxido de carbono."
             },
             {
-              text: "¿Cuál es la profilaxis secundaria adecuada a largo plazo tras estabilizar este TEP provocado?",
+              text: "¿Cuál es la duración mínima recomendada de la anticoagulación secundaria tras la estabilización de este TEP provocado por cirugía?",
               options: [
-                "Anticoagulación oral durante un mínimo de 3 a 6 meses",
+                "Al menos 3 a 6 meses",
                 "Aspirina 100 mg cada 48 horas durante 1 mes",
                 "No requiere ningún tratamiento posterior",
-                "Tratamiento antibiótico con betalactámicos"
+                "Tratamiento antibiótico durante 14 días"
               ],
               correct: 0,
-              detail: "Todo episodio de tromboembolismo venoso requiere anticoagulación formal (ACO o ACOD) durante al menos 3 a 6 meses para prevenir recidivas.",
+              detail: "Todo episodio de tromboembolismo venoso requiere anticoagulación terapéutica formal durante un mínimo de 3 a 6 meses para prevenir recidivas.",
               distractors: "La aspirina no previene de forma eficaz la recurrencia del tromboembolismo venoso.",
               formula: "TEP superado = Anticoagulación durante 3 a 6 meses mínimo, porque la cascada protrombótica permanece activa tras el episodio."
             },
             {
               text: "¿Por qué en la auscultación pulmonar de un TEP masivo los campos suelen estar limpios de estertores?",
               options: [
-                "Porque la obstrucción está en el lecho vascular arterial y no hay congestión alveolar izquierda inicial",
-                "Porque el líquido se acumula exclusivamente en el pericardio",
+                "Porque la obstrucción se sitúa en el lecho vascular arterial y no hay congestión alvéolo-capilar izquierda",
+                "Porque el líquido se acumula exclusivamente en el espacio pericárdico",
                 "Porque el trombo produce broncodilatación refleja masiva",
-                "Porque los pulmones no reciben sangre en absoluto"
+                "Porque los pulmones no reciben flujo sanguíneo en absoluto"
               ],
               correct: 0,
-              detail: "A diferencia del edema agudo de pulmón, en el TEP el ventrículo izquierdo recibe poco flujo, por lo que no hay hipertensión capilar pulmonar ni trasudado.",
-              distractors: "El shock obstructivo por TEP cursa con pulmones limpios, lo que descarta el fallo de ventrículo izquierdo.",
+              detail: "A diferencia del edema pulmonar cardiogénico izquierdo, en el TEP el ventrículo izquierdo recibe poco flujo, por lo que no hay aumento de presión capilar pulmonar ni trasudado alveolar.",
+              distractors: "El shock obstructivo por TEP cursa con campos pulmonares secos y limpios, descartando el fallo ventricular izquierdo primario.",
               formula: "Hipotensión grave + Yugulares dilatadas + Auscultación pulmonar limpia = Shock Obstructivo (TEP / Taponamiento), porque el fallo está fuera del alvéolo."
             },
             {
-              text: "¿Qué signo en el POCUS cardiaco define el signo de McConnell característico del TEP?",
+              text: "¿Qué signo en el POCUS cardiaco define el signo de McConnell característico del TEP agudo?",
               options: [
-                "Acinesia de la pared libre del VD con contractilidad preservada del ápex",
+                "Hipocinesia de la pared libre del ventrículo derecho con contractilidad preservada del ápex del VD",
                 "Dilatación masiva de la aurícula izquierda con válvula mitral inmóvil",
                 "Colapso diastólico del ventrículo izquierdo exclusivamente",
                 "Hipertrofia concéntrica severa del tabique interventricular"
               ],
               correct: 0,
-              detail: "El signo de McConnell muestra una pared libre del ventrículo derecho hipocinética o paralizada mientras que la punta o ápex del VD mantiene contracción vigorosa.",
-              distractors: "Es un signo con alta especificidad para diferenciar sobrecarga aguda de sobrecarga crónica de VD.",
+              detail: "El signo de McConnell muestra una pared libre del ventrículo derecho acinética con contracción apical preservada o vigorosa, con alta especificidad para TEP agudo.",
+              distractors: "Diferencia la sobrecarga aguda de ventrículo derecho de la hipertensión pulmonar crónica.",
               formula: "POCUS con pared libre de VD parada + ápex contráctil = Signo de McConnell (TEP Agudo), porque refleja el fallo agudo miocárdico."
             },
             {
@@ -1272,60 +1356,96 @@
             }
           ];
 
-          return { id, category: "Respiratorio y Shock Obstructivo", title, vignette, questions: rawQuestions };
+          return { id, clue: "Disnea súbita e inestabilidad hemodinámica tras factor de riesgo trombótico", title, vignette, questions };
         }
       }
     ];
 
     /* ==============================================================
-       ESTADO GLOBAL
+       ESTADO GLOBAL DE LA APLICACIÓN
        ============================================================== */
-    let currentExamMode = 'single';
-    let activeQuestions = [];
-    let currentQIndex = 0;
-    let userAnswers = {};
-    let examCountdownInterval = null;
-    let secondsLeft = 25 * 60;
-    let reviewFilter = 'all';
+    let examState = {
+      mode: 'single', // 'single' (15 q, 25 min) o 'triad' (45 q, 90 min)
+      questions: [],
+      currentIndex: 0,
+      answers: {},
+      timerInterval: null,
+      secondsRemaining: 25 * 60,
+      isExamActive: false,
+      resultsFilter: 'all',
+      caseMetadata: []
+    };
 
+    // Inicialización al cargar la ventana
     window.addEventListener('DOMContentLoaded', () => {
-      updateThemeDisplay();
+      initTheme();
     });
 
-    function onModeChange(mode) {
-      currentExamMode = mode;
-    }
-
-    function shuffleArray(array) {
-      const arr = [...array];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
+    function handleModeChange(mode) {
+      examState.mode = mode;
     }
 
     /* ==============================================================
-       GENERADOR ALEATORIO
+       CONTROL DE MODALES Y GENERACIÓN ALEATORIA
        ============================================================== */
-    function generateRandomFreshExam() {
-      userAnswers = {};
-      currentQIndex = 0;
-      activeQuestions = [];
+    function promptRandomGeneration() {
+      if (examState.isExamActive && Object.keys(examState.answers).length > 0) {
+        document.getElementById('modalRandomConfirm').classList.remove('hidden');
+      } else {
+        startFreshRandomExam();
+      }
+    }
 
-      const area = document.getElementById('curriculumAreaSelect').value;
-      let eligibleArchetypes = ARCHETYPES;
+    function closeRandomModal() {
+      document.getElementById('modalRandomConfirm').classList.add('hidden');
+    }
 
-      if (area !== 'ALL') {
-        const filtered = ARCHETYPES.filter(a => a.topic === area);
-        if (filtered.length > 0) eligibleArchetypes = filtered;
+    function forceStartFreshRandomExam() {
+      closeRandomModal();
+      startFreshRandomExam();
+    }
+
+    function handleHeaderHomeClick() {
+      if (examState.isExamActive) {
+        confirmSubmitModal();
+      } else {
+        backToMainHome();
+      }
+    }
+
+    /* ==============================================================
+       GENERACIÓN DEL EXAMEN ALEATORIO (15 PREGUNTAS)
+       ============================================================== */
+    function startFreshRandomExam() {
+      if (examState.timerInterval) clearInterval(examState.timerInterval);
+
+      examState.answers = {};
+      examState.currentIndex = 0;
+      examState.questions = [];
+      examState.caseMetadata = [];
+      examState.isExamActive = true;
+
+      const areaFilter = document.getElementById('curriculumAreaSelect').value;
+      let pool = CLINICAL_ARCHETYPES;
+
+      if (areaFilter !== 'ALL') {
+        const filtered = CLINICAL_ARCHETYPES.filter(a => a.topic === areaFilter);
+        if (filtered.length > 0) pool = filtered;
       }
 
-      if (currentExamMode === 'single') {
-        const arch = eligibleArchetypes[Math.floor(Math.random() * eligibleArchetypes.length)];
-        const generated = arch.generator();
+      if (examState.mode === 'single') {
+        // MODO 1 CASO: 15 PREGUNTAS (25 MINUTOS)
+        const arch = randomChoice(pool);
+        const generated = arch.generate();
 
-        activeQuestions = generated.questions.map((q, idx) => {
+        examState.caseMetadata.push({
+          id: generated.id,
+          title: generated.title,
+          vignette: generated.vignette,
+          clue: generated.clue
+        });
+
+        examState.questions = generated.questions.map((q, idx) => {
           const originalCorrectText = q.options[q.correct];
           const shuffledOptions = shuffleArray(q.options);
           const newCorrectIndex = shuffledOptions.indexOf(originalCorrectText);
@@ -1334,43 +1454,53 @@
             ...q,
             options: shuffledOptions,
             correct: newCorrectIndex,
-            vignetteTitle: generated.title,
-            vignetteText: generated.vignette,
-            categoryName: generated.category,
-            caseBadgeText: `CASO ${generated.id} (Inédito)`,
-            globalIndex: idx
+            caseId: generated.id,
+            caseTitle: generated.title,
+            caseVignette: generated.vignette,
+            caseClue: generated.clue,
+            badgeLabel: `CASO #${generated.id}`,
+            questionGlobalIndex: idx
           };
         });
 
-        secondsLeft = 25 * 60;
+        examState.secondsRemaining = 25 * 60;
       } else {
-        const shuffledArchetypes = shuffleArray(eligibleArchetypes);
-        const selectedArchetypes = shuffledArchetypes.slice(0, 3);
-        let counter = 0;
+        // MODO EXAMEN COMPLETO: 3 CASOS = 45 PREGUNTAS (90 MINUTOS)
+        const selectedArchetypes = shuffleArray(pool).slice(0, 3);
+        let globalCounter = 0;
 
-        selectedArchetypes.forEach((arch, archIndex) => {
-          const generated = arch.generator();
+        selectedArchetypes.forEach((arch, archIdx) => {
+          const generated = arch.generate();
+          examState.caseMetadata.push({
+            id: generated.id,
+            title: generated.title,
+            vignette: generated.vignette,
+            clue: generated.clue
+          });
+
           generated.questions.forEach((q) => {
             const originalCorrectText = q.options[q.correct];
             const shuffledOptions = shuffleArray(q.options);
             const newCorrectIndex = shuffledOptions.indexOf(originalCorrectText);
 
-            activeQuestions.push({
+            examState.questions.push({
               ...q,
               options: shuffledOptions,
               correct: newCorrectIndex,
-              vignetteTitle: generated.title,
-              vignetteText: generated.vignette,
-              categoryName: generated.category,
-              caseBadgeText: `CASO ${archIndex + 1} de 3 (${generated.id})`,
-              globalIndex: counter++
+              caseId: generated.id,
+              caseTitle: generated.title,
+              caseVignette: generated.vignette,
+              caseClue: generated.clue,
+              badgeLabel: `CASO ${archIdx + 1}/3 (#${generated.id})`,
+              questionGlobalIndex: globalCounter++
             });
           });
         });
 
-        secondsLeft = 90 * 60;
+        examState.secondsRemaining = 90 * 60;
       }
 
+      // Transición de pantallas
       document.getElementById('screenHome').classList.add('hidden');
       document.getElementById('screenResults').classList.add('hidden');
       document.getElementById('screenExam').classList.remove('hidden');
@@ -1378,38 +1508,38 @@
       document.getElementById('topTimerBox').classList.remove('hidden');
       document.getElementById('topTimerBox').classList.add('flex');
 
-      document.getElementById('totalQuestionsDisplay').textContent = activeQuestions.length;
+      document.getElementById('totalQuestionsDisplay').textContent = examState.questions.length;
 
-      startExamTimer();
-      buildPaletteButtons();
-      renderQuestionCard();
+      startCountdownClock();
+      renderPaletteButtons();
+      renderCurrentQuestionCard();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     /* ==============================================================
        TEMPORIZADOR
        ============================================================== */
-    function startExamTimer() {
-      if (examCountdownInterval) clearInterval(examCountdownInterval);
-      renderTimerClock();
-      examCountdownInterval = setInterval(() => {
-        secondsLeft--;
-        renderTimerClock();
-        if (secondsLeft <= 0) {
-          clearInterval(examCountdownInterval);
-          finalizeAndEvaluateExam();
+    function startCountdownClock() {
+      if (examState.timerInterval) clearInterval(examState.timerInterval);
+      updateClockVisual();
+      examState.timerInterval = setInterval(() => {
+        examState.secondsRemaining--;
+        updateClockVisual();
+        if (examState.secondsRemaining <= 0) {
+          clearInterval(examState.timerInterval);
+          finishAndEvaluateCurrentExam();
         }
       }, 1000);
     }
 
-    function renderTimerClock() {
-      const m = Math.floor(secondsLeft / 60);
-      const s = secondsLeft % 60;
-      const str = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    function updateClockVisual() {
+      const minutes = Math.floor(examState.secondsRemaining / 60);
+      const seconds = examState.secondsRemaining % 60;
+      const text = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
       const elem = document.getElementById('topTimerText');
-      elem.textContent = str;
+      elem.textContent = text;
 
-      if (secondsLeft < 300) {
+      if (examState.secondsRemaining < 300) {
         elem.classList.remove('text-amber-300');
         elem.classList.add('text-rose-400');
       } else {
@@ -1419,31 +1549,31 @@
     }
 
     /* ==============================================================
-       RENDERIZADO DE PREGUNTA
+       RENDERIZADO DE LA PREGUNTA ACTIVA
        ============================================================== */
-    function renderQuestionCard() {
-      const q = activeQuestions[currentQIndex];
+    function renderCurrentQuestionCard() {
+      const q = examState.questions[examState.currentIndex];
       if (!q) return;
 
-      document.getElementById('examCaseBadge').textContent = q.caseBadgeText;
-      document.getElementById('examCaseCategory').textContent = q.categoryName;
-      document.getElementById('currentQuestionNumDisplay').textContent = currentQIndex + 1;
-      document.getElementById('examVignetteTitle').textContent = q.vignetteTitle;
-      document.getElementById('examVignetteBody').textContent = q.vignetteText;
-      document.getElementById('examQuestionText').textContent = `${currentQIndex + 1}. ${q.text}`;
+      document.getElementById('examCaseBadge').textContent = q.badgeLabel;
+      document.getElementById('examCaseClueTag').textContent = q.caseClue;
+      document.getElementById('currentQuestionNumDisplay').textContent = examState.currentIndex + 1;
+      document.getElementById('examVignetteTitle').textContent = q.caseTitle;
+      document.getElementById('examVignetteText').textContent = q.caseVignette;
+      document.getElementById('examQuestionTitle').textContent = `${examState.currentIndex + 1}. ${q.text}`;
 
-      const list = document.getElementById('examOptionsList');
-      list.innerHTML = '';
+      const container = document.getElementById('examOptionsContainer');
+      container.innerHTML = '';
       const letters = ['A', 'B', 'C', 'D'];
-      const userChoice = userAnswers[currentQIndex];
+      const currentSelection = examState.answers[examState.currentIndex];
 
       q.options.forEach((optText, optIdx) => {
-        const isSelected = userChoice === optIdx;
+        const isSelected = currentSelection === optIdx;
         const btn = document.createElement('button');
-        btn.onclick = () => selectExamOption(optIdx);
-        btn.className = `w-full text-left p-3.5 rounded-xl border-2 transition-all flex items-start space-x-3 text-xs md:text-sm font-medium ${
+        btn.onclick = () => selectOption(optIdx);
+        btn.className = `w-full text-left p-3.5 rounded-xl border-2 transition-all flex items-start space-x-3 text-xs sm:text-sm font-medium ${
           isSelected 
-            ? 'border-emerald-600 bg-emerald-50/80 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-100 shadow-sm'
+            ? 'border-emerald-600 bg-emerald-50/90 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-100 shadow-sm'
             : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/70 dark:bg-slate-900/60 text-slate-800 dark:text-slate-200'
         }`;
 
@@ -1455,76 +1585,69 @@
           }">${letters[optIdx]}</span>
           <span class="pt-0.5 leading-snug">${optText}</span>
         `;
-        list.appendChild(btn);
+        container.appendChild(btn);
       });
 
-      document.getElementById('btnPrevQuestion').disabled = (currentQIndex === 0);
-      const btnNext = document.getElementById('btnNextQuestion');
-      if (currentQIndex === activeQuestions.length - 1) {
-        btnNext.innerHTML = `<span>Revisar Paleta</span> <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+      document.getElementById('btnPrevQuestion').disabled = (examState.currentIndex === 0);
+      const nextBtn = document.getElementById('btnNextQuestion');
+      if (examState.currentIndex === examState.questions.length - 1) {
+        nextBtn.innerHTML = `<span>Entregar</span> <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
       } else {
-        btnNext.innerHTML = `<span>Siguiente</span> <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>`;
+        nextBtn.innerHTML = `<span>Siguiente</span> <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>`;
       }
 
       updatePaletteButtonsVisual();
     }
 
-    function selectExamOption(idx) {
-      userAnswers[currentQIndex] = idx;
-      renderQuestionCard();
+    function selectOption(idx) {
+      examState.answers[examState.currentIndex] = idx;
+      renderCurrentQuestionCard();
     }
 
-    function markQuestionBlank() {
-      delete userAnswers[currentQIndex];
-      renderQuestionCard();
+    function clearCurrentAnswer() {
+      delete examState.answers[examState.currentIndex];
+      renderCurrentQuestionCard();
     }
 
-    function goToNextQuestion() {
-      if (currentQIndex < activeQuestions.length - 1) {
-        currentQIndex++;
-        renderQuestionCard();
+    function navigateQuestion(direction) {
+      const targetIndex = examState.currentIndex + direction;
+      if (targetIndex >= 0 && targetIndex < examState.questions.length) {
+        examState.currentIndex = targetIndex;
+        renderCurrentQuestionCard();
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        openConfirmSubmitModal();
+      } else if (targetIndex >= examState.questions.length) {
+        confirmSubmitModal();
       }
     }
 
-    function goToPreviousQuestion() {
-      if (currentQIndex > 0) {
-        currentQIndex--;
-        renderQuestionCard();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }
-
-    function jumpToPaletteQuestion(idx) {
-      currentQIndex = idx;
-      renderQuestionCard();
+    function jumpToQuestion(idx) {
+      examState.currentIndex = idx;
+      renderCurrentQuestionCard();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function toggleVignetteCollapse() {
-      const body = document.getElementById('examVignetteBody');
-      const label = document.getElementById('vignetteToggleLabel');
-      if (body.classList.contains('hidden')) {
-        body.classList.remove('hidden');
-        label.textContent = 'Ocultar texto';
+    function toggleVignetteView() {
+      const textElem = document.getElementById('examVignetteText');
+      const labelElem = document.getElementById('vignetteToggleBtnLabel');
+      if (textElem.classList.contains('hidden')) {
+        textElem.classList.remove('hidden');
+        labelElem.textContent = 'Ocultar datos';
       } else {
-        body.classList.add('hidden');
-        label.textContent = 'Mostrar texto';
+        textElem.classList.add('hidden');
+        labelElem.textContent = 'Mostrar datos';
       }
     }
 
     /* ==============================================================
-       PALETA Y CONTROL
+       PALETA INFERIOR DE PREGUNTAS
        ============================================================== */
-    function buildPaletteButtons() {
-      const container = document.getElementById('examPaletteGrid');
+    function renderPaletteButtons() {
+      const container = document.getElementById('examPaletteButtons');
       container.innerHTML = '';
-      activeQuestions.forEach((_, idx) => {
+      examState.questions.forEach((_, idx) => {
         const btn = document.createElement('button');
         btn.id = `paletteItem-${idx}`;
-        btn.onclick = () => jumpToPaletteQuestion(idx);
+        btn.onclick = () => jumpToQuestion(idx);
         btn.className = "w-full aspect-square rounded-lg text-xs font-bold flex items-center justify-center border transition";
         btn.textContent = idx + 1;
         container.appendChild(btn);
@@ -1533,13 +1656,13 @@
     }
 
     function updatePaletteButtonsVisual() {
-      const total = activeQuestions.length;
+      const total = examState.questions.length;
       let answered = 0;
-      activeQuestions.forEach((_, idx) => {
+      examState.questions.forEach((_, idx) => {
         const btn = document.getElementById(`paletteItem-${idx}`);
         if (!btn) return;
-        const isCurrent = idx === currentQIndex;
-        const isAnswered = userAnswers[idx] !== undefined;
+        const isCurrent = idx === examState.currentIndex;
+        const isAnswered = examState.answers[idx] !== undefined;
         if (isAnswered) answered++;
 
         if (isCurrent) {
@@ -1550,180 +1673,184 @@
           btn.className = "w-full aspect-square rounded-lg text-xs font-medium flex items-center justify-center bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-100";
         }
       });
-      document.getElementById('answeredTallyText').textContent = `${answered}/${total} respondidas`;
+      document.getElementById('answeredSummaryDisplay').textContent = `${answered}/${total} contestadas`;
     }
 
-    function openConfirmSubmitModal() {
-      const answered = Object.keys(userAnswers).length;
-      const total = activeQuestions.length;
+    /* ==============================================================
+       MODALES Y EVALUACIÓN FINAL
+       ============================================================== */
+    function confirmSubmitModal() {
+      const answered = Object.keys(examState.answers).length;
+      const total = examState.questions.length;
       document.getElementById('modalSubmitStatsSummary').textContent = 
-        `Has contestado ${answered} de ${total} preguntas. Recuerda: acierto = +1,00 | fallo = -0,25 | blanco = 0,00. ¿Deseas corregir ahora?`;
-      document.getElementById('modalConfirmSubmit').classList.remove('hidden');
+        `Has respondido ${answered} de ${total} preguntas. Recuerda: acierto = +1,00 | fallo = -0,25 | blanco = 0,00. ¿Deseas entregar el caso para su corrección?`;
+      document.getElementById('modalSubmitConfirmation').classList.remove('hidden');
     }
 
-    function closeConfirmModal() {
-      document.getElementById('modalConfirmSubmit').classList.add('hidden');
+    function closeSubmitModal() {
+      document.getElementById('modalSubmitConfirmation').classList.add('hidden');
     }
 
-    function finalizeAndEvaluateExam() {
-      closeConfirmModal();
-      if (examCountdownInterval) clearInterval(examCountdownInterval);
+    function finishAndEvaluateCurrentExam() {
+      closeSubmitModal();
+      if (examState.timerInterval) clearInterval(examState.timerInterval);
+      examState.isExamActive = false;
 
       document.getElementById('topTimerBox').classList.add('hidden');
       document.getElementById('screenExam').classList.remove('flex');
       document.getElementById('screenExam').classList.add('hidden');
       document.getElementById('screenResults').classList.remove('hidden');
 
-      evaluateScoresAndRenderReview();
+      evaluateScoresAndDisplayReport();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     /* ==============================================================
-       EVALUACIÓN Y REVISIÓN
+       CORRECCIÓN DETALLADA Y CÁLCULO DE BAREMO OFICIAL
        ============================================================== */
-    function evaluateScoresAndRenderReview() {
+    function evaluateScoresAndDisplayReport() {
       let correct = 0;
       let wrong = 0;
       let blank = 0;
 
-      activeQuestions.forEach((q, idx) => {
-        const ans = userAnswers[idx];
-        if (ans === undefined) {
+      examState.questions.forEach((q, idx) => {
+        const userChoice = examState.answers[idx];
+        if (userChoice === undefined) {
           blank++;
-        } else if (ans === q.correct) {
+        } else if (userChoice === q.correct) {
           correct++;
         } else {
           wrong++;
         }
       });
 
-      const netPoints = Math.max(0, (correct * 1.0) - (wrong * 0.25));
-      const totalCount = activeQuestions.length;
+      const netScore = Math.max(0, (correct * 1.0) - (wrong * 0.25));
+      const totalQ = examState.questions.length;
 
       let passed = false;
-      let bannerHtml = '';
+      let verdictMarkup = '';
 
-      if (currentExamMode === 'single') {
-        passed = netPoints >= 5.0;
-        bannerHtml = `
+      if (examState.mode === 'single') {
+        passed = netScore >= 5.0;
+        verdictMarkup = `
           <div class="space-y-1 text-center md:text-left">
             <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-black ${
               passed ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200' : 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-200'
             }">
-              ${passed ? '✓ APTO EN EL CASO PRÁCTICO' : '✕ NO APTO (Menor de 5 puntos)'}
+              ${passed ? '✓ APTO EN EL CASO PRÁCTICO' : '✕ NO APTO (Inferior a 5,00 puntos)'}
             </span>
-            <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white">
-              ${passed ? '¡Superado con Criterio Oficial!' : 'No alcanzas el mínimo de 5,00 puntos'}
+            <h3 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+              ${passed ? '¡Superado con Criterio Oficial MUE!' : 'Puntuación neta insuficiente'}
             </h3>
             <p class="text-xs text-slate-600 dark:text-slate-400">
-              ${passed ? 'Puntuación neta por encima del corte mínimo exigido en la convocatoria.' : 'Recuerda que en el examen oficial un solo caso por debajo de 5 supone la no superación.'}
+              ${passed ? 'Has alcanzado el mínimo reglamentario de 5,00 puntos exigido en cada caso práctico.' : 'La Orden ministerial exige obligatoriamente ≥ 5,00 puntos en cada uno de los casos para optar al apto.'}
             </p>
           </div>
-          <div class="text-3xl md:text-4xl font-black ${passed ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
-            ${netPoints.toFixed(2)} <span class="text-xs text-slate-400 font-bold">/ 15,00 pts</span>
+          <div class="text-3xl sm:text-4xl font-black ${passed ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+            ${netScore.toFixed(2)} <span class="text-xs text-slate-400 font-bold">/ 15,00 pts</span>
           </div>
         `;
       } else {
-        passed = netPoints >= 20.0;
-        bannerHtml = `
+        passed = netScore >= 20.0;
+        verdictMarkup = `
           <div class="space-y-1 text-center md:text-left">
             <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-black ${
               passed ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200' : 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-200'
             }">
-              ${passed ? '✓ APTO EN EL SIMULACRO GLOBAL' : '✕ NO APTO GLOBAL (Menor de 20 puntos)'}
+              ${passed ? '✓ APTO GLOBAL EN EL SIMULACRO' : '✕ NO APTO GLOBAL (Inferior a 20,00 puntos)'}
             </span>
-            <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white">
-              ${passed ? '¡Aprobado Global Alcanzado!' : 'Puntuación global insuficiente'}
+            <h3 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+              ${passed ? '¡Aprobado Global Alcanzado!' : 'Puntuación global por debajo del corte'}
             </h3>
             <p class="text-xs text-slate-600 dark:text-slate-400">
-              Requisito oficial: al menos 5 puntos en cada uno de los 3 casos y suma total ≥ 20 puntos.
+              Criterio de aprobado global: suma total ≥ 20,00 puntos en los 3 casos (y ≥ 5 en cada uno).
             </p>
           </div>
-          <div class="text-3xl md:text-4xl font-black ${passed ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
-            ${netPoints.toFixed(2)} <span class="text-xs text-slate-400 font-bold">/ 45,00 pts</span>
+          <div class="text-3xl sm:text-4xl font-black ${passed ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+            ${netScore.toFixed(2)} <span class="text-xs text-slate-400 font-bold">/ 45,00 pts</span>
           </div>
         `;
       }
 
-      const banner = document.getElementById('resultsVerdictBanner');
-      banner.className = `rounded-2xl p-5 shadow-sm border flex flex-col md:flex-row items-center justify-between gap-4 ${
+      const verdictContainer = document.getElementById('resultsVerdictCard');
+      verdictContainer.className = `rounded-2xl p-5 shadow-sm border flex flex-col md:flex-row items-center justify-between gap-4 ${
         passed 
           ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800' 
           : 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-800'
       }`;
-      banner.innerHTML = bannerHtml;
+      verdictContainer.innerHTML = verdictMarkup;
 
-      document.getElementById('statNetScore').textContent = netPoints.toFixed(2);
+      document.getElementById('statNetScore').textContent = netScore.toFixed(2);
       document.getElementById('statCorrectCount').textContent = correct;
-      document.getElementById('statCorrectPercent').textContent = `${Math.round((correct / totalCount) * 100)}% acierto`;
+      document.getElementById('statCorrectPercent').textContent = `${Math.round((correct / totalQ) * 100)}% acierto`;
       document.getElementById('statWrongCount').textContent = wrong;
-      document.getElementById('statPenaltyDeduction').textContent = `-${(wrong * 0.25).toFixed(2)} pts`;
+      document.getElementById('statPenaltyScore').textContent = `-${(wrong * 0.25).toFixed(2)} pts`;
       document.getElementById('statBlankCount').textContent = blank;
 
-      renderResultsListFiltered();
+      renderFilteredReviewCards();
     }
 
-    function setReviewFilter(filter) {
-      reviewFilter = filter;
-      const btnAll = document.getElementById('btnFilterAll');
-      const btnFailed = document.getElementById('btnFilterFailed');
+    function setResultsFilter(mode) {
+      examState.resultsFilter = mode;
+      const btnAll = document.getElementById('btnFilterReviewAll');
+      const btnFailed = document.getElementById('btnFilterReviewFailed');
 
-      if (filter === 'all') {
-        btnAll.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-900 text-white";
+      if (mode === 'all') {
+        btnAll.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-900 dark:bg-slate-700 text-white";
         btnFailed.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300";
       } else {
-        btnFailed.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-900 text-white";
+        btnFailed.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-900 dark:bg-slate-700 text-white";
         btnAll.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300";
       }
-      renderResultsListFiltered();
+      renderFilteredReviewCards();
     }
 
-    function renderResultsListFiltered() {
-      const container = document.getElementById('resultsDetailedList');
+    function renderFilteredReviewCards() {
+      const container = document.getElementById('resultsDetailedQuestionsList');
       container.innerHTML = '';
       const letters = ['A', 'B', 'C', 'D'];
 
-      activeQuestions.forEach((q, idx) => {
-        const ans = userAnswers[idx];
-        const isCorrect = ans === q.correct;
-        const isBlank = ans === undefined;
+      examState.questions.forEach((q, idx) => {
+        const userChoice = examState.answers[idx];
+        const isCorrect = userChoice === q.correct;
+        const isBlank = userChoice === undefined;
 
-        if (reviewFilter === 'failed' && (isCorrect || isBlank)) {
+        if (examState.resultsFilter === 'failed' && (isCorrect || isBlank)) {
           return;
         }
 
-        let badgeStyle = 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
-        let badgeLabel = 'EN BLANCO (0,00 pts)';
-        let borderClass = 'border-l-slate-400';
+        let badgeClass = 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
+        let badgeText = 'EN BLANCO (0,00 pts)';
+        let borderAccent = 'border-l-slate-400';
 
         if (isCorrect) {
-          badgeStyle = 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200 border border-emerald-300';
-          badgeLabel = 'CORRECTA (+1,00 pt)';
-          borderClass = 'border-l-emerald-500';
+          badgeClass = 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200 border border-emerald-300';
+          badgeText = 'CORRECTA (+1,00 pt)';
+          borderAccent = 'border-l-emerald-500';
         } else if (!isBlank) {
-          badgeStyle = 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-200 border border-rose-300';
-          badgeLabel = 'INCORRECTA (-0,25 pts)';
-          borderClass = 'border-l-rose-500';
+          badgeClass = 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-200 border border-rose-300';
+          badgeText = 'INCORRECTA (-0,25 pt)';
+          borderAccent = 'border-l-rose-500';
         }
 
         const card = document.createElement('div');
-        card.className = `bg-white dark:bg-slate-900 rounded-2xl p-4 md:p-5 shadow-sm border border-slate-200 dark:border-slate-800 space-y-3 border-l-4 ${borderClass}`;
+        card.className = `bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 dark:border-slate-800 space-y-3 border-l-4 ${borderAccent}`;
 
-        let optionsMarkup = '';
+        let optionsListHtml = '';
         q.options.forEach((optText, optIdx) => {
           let rowStyle = 'border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 text-slate-700 dark:text-slate-300';
           let indicator = '';
 
           if (optIdx === q.correct) {
             rowStyle = 'border-emerald-300 dark:border-emerald-700 bg-emerald-50/80 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-100 font-bold';
-            indicator = '<span class="ml-auto text-emerald-700 dark:text-emerald-400 text-[11px] font-black">✓ Correcta</span>';
-          } else if (ans === optIdx && !isCorrect) {
+            indicator = '<span class="ml-auto text-emerald-700 dark:text-emerald-400 text-[11px] font-black shrink-0">✓ Correcta</span>';
+          } else if (userChoice === optIdx && !isCorrect) {
             rowStyle = 'border-rose-300 dark:border-rose-800 bg-rose-50/80 dark:bg-rose-950/40 text-rose-950 dark:text-rose-200 line-through';
-            indicator = '<span class="ml-auto text-rose-600 dark:text-rose-400 text-[11px] font-black">✕ Tu respuesta</span>';
+            indicator = '<span class="ml-auto text-rose-600 dark:text-rose-400 text-[11px] font-black shrink-0">✕ Tu respuesta</span>';
           }
 
-          optionsMarkup += `
-            <div class="p-2.5 rounded-xl border text-xs md:text-sm flex items-center ${rowStyle}">
+          optionsListHtml += `
+            <div class="p-2.5 rounded-xl border text-xs sm:text-sm flex items-center ${rowStyle}">
               <span class="w-5 h-5 rounded-md flex items-center justify-center font-black text-[11px] mr-2 shrink-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">${letters[optIdx]}</span>
               <span class="flex-1">${optText}</span>
               ${indicator}
@@ -1733,15 +1860,16 @@
 
         card.innerHTML = `
           <div class="flex items-start justify-between gap-2">
-            <span class="text-xs font-bold text-slate-400">Pregunta ${idx + 1} de ${activeQuestions.length}</span>
-            <span class="text-[11px] font-black px-2.5 py-0.5 rounded-full ${badgeStyle}">${badgeLabel}</span>
+            <span class="text-xs font-bold text-slate-400">Pregunta ${idx + 1} de ${examState.questions.length}</span>
+            <span class="text-[11px] font-black px-2.5 py-0.5 rounded-full ${badgeClass}">${badgeText}</span>
           </div>
-          <h4 class="font-bold text-slate-900 dark:text-white text-sm md:text-base leading-snug">${q.text}</h4>
+          <h4 class="font-bold text-slate-900 dark:text-white text-sm sm:text-base leading-snug">${q.text}</h4>
 
           <div class="space-y-1.5 pt-1">
-            ${optionsMarkup}
+            ${optionsListHtml}
           </div>
 
+          <!-- Justificación Clínica del Caso -->
           <div class="mt-3 bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs space-y-2 text-selectable">
             <div>
               <span class="font-extrabold text-slate-900 dark:text-white">Fundamento de la respuesta correcta:</span>
@@ -1753,11 +1881,12 @@
             </div>
           </div>
 
+          <!-- FÓRMULA DE FIJACIÓN RÁPIDA (PARA NO OLVIDARLA) -->
           <div class="mt-2 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 dark:from-emerald-950/40 dark:to-teal-950/40 p-3 rounded-xl border border-emerald-500/30">
             <div class="flex items-center space-x-1.5 text-emerald-900 dark:text-emerald-300 font-black text-[11px] uppercase tracking-wide">
-              <span>💡 Fórmula de Fijación Rápida (Para no olvidarla)</span>
+              <span>💡 Fórmula de Fijación (Regla Nemotécnica Rápida):</span>
             </div>
-            <div class="mt-1 text-xs md:text-sm font-black text-emerald-950 dark:text-emerald-100 font-mono bg-white/90 dark:bg-slate-900/90 p-2.5 rounded-lg border border-emerald-200 dark:border-emerald-800 shadow-sm text-selectable">
+            <div class="mt-1 text-xs sm:text-sm font-black text-emerald-950 dark:text-emerald-100 font-mono bg-white/90 dark:bg-slate-900/90 p-2.5 rounded-lg border border-emerald-200 dark:border-emerald-800 shadow-sm text-selectable">
               ${q.formula}
             </div>
           </div>
@@ -1766,21 +1895,21 @@
         container.appendChild(card);
       });
 
-      if (container.children.length === 0 && reviewFilter === 'failed') {
+      if (container.children.length === 0 && examState.resultsFilter === 'failed') {
         container.innerHTML = `
           <div class="bg-white dark:bg-slate-900 rounded-2xl p-8 text-center border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
             <div class="text-3xl">🎉</div>
-            <div class="font-bold text-slate-900 dark:text-white text-base">¡Enhorabuena, no has tenido ningún fallo!</div>
-            <p class="text-xs text-slate-500">Selecciona el botón "Todas" para repasar las preguntas y sus reglas nemotécnicas.</p>
+            <div class="font-bold text-slate-900 dark:text-white text-base">¡Enhorabuena, no has tenido ningún fallo en este caso!</div>
+            <p class="text-xs text-slate-500">Selecciona "Todas" en el filtro superior para repasar las preguntas y las fórmulas nemotécnicas.</p>
           </div>
         `;
       }
     }
 
     /* ==============================================================
-       EXPORTACIÓN A PDF
+       EXPORTACIÓN DEL CASO A FORMATO PDF
        ============================================================== */
-    function exportExamPDF() {
+    function downloadExamAsPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({
         orientation: 'portrait',
@@ -1791,61 +1920,81 @@
       const letters = ['A', 'B', 'C', 'D'];
       let y = 15;
 
+      // Encabezado
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(14);
-      doc.text("SIMULACRO OFICIAL MUE 2026 - CORRECCIÓN DE CASO CLÍNICO", 15, y);
-      y += 7;
-
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "normal");
-      doc.text("Especialidad de Medicina de Urgencias y Emergencias (Examen 12/12/2026)", 15, y);
+      doc.setFontSize(13);
+      doc.text("SIMULACRO OFICIAL MUE 2026 - MEDICINA DE URGENCIAS Y EMERGENCIAS", 14, y);
       y += 6;
 
-      doc.setLineWidth(0.4);
-      doc.line(15, y, 195, y);
-      y += 8;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.text("Orden PJC/311/2026 · Prueba de Acceso Extraordinario a la Especialidad", 14, y);
+      y += 5;
 
-      activeQuestions.forEach((q, idx) => {
+      doc.setLineWidth(0.3);
+      doc.line(14, y, 196, y);
+      y += 7;
+
+      // Caso Clínico
+      if (examState.caseMetadata.length > 0) {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.text("VIÑETA CLÍNICA DEL CASO:", 14, y);
+        y += 5;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        const splitVignette = doc.splitTextToSize(examState.caseMetadata[0].vignette, 180);
+        doc.text(splitVignette, 14, y);
+        y += (splitVignette.length * 4) + 6;
+      }
+
+      // Preguntas y Fórmulas de Fijación
+      examState.questions.forEach((q, idx) => {
         if (y > 260) {
           doc.addPage();
           y = 15;
         }
 
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        const qTitle = `P${idx + 1}. ${q.text}`;
-        const splitTitle = doc.splitTextToSize(qTitle, 180);
-        doc.text(splitTitle, 15, y);
-        y += (splitTitle.length * 4.5) + 2;
+        doc.setFontSize(9.5);
+        const splitQ = doc.splitTextToSize(`P${idx + 1}. ${q.text}`, 180);
+        doc.text(splitQ, 14, y);
+        y += (splitQ.length * 4.2) + 1.5;
 
         doc.setFont("helvetica", "normal");
-        doc.setFontSize(8.5);
+        doc.setFontSize(8);
 
         q.options.forEach((opt, oIdx) => {
           if (y > 275) { doc.addPage(); y = 15; }
-          const isCorrect = oIdx === q.correct ? " (CORRECTA)" : "";
-          const optText = `  [${letters[oIdx]}] ${opt}${isCorrect}`;
-          const splitOpt = doc.splitTextToSize(optText, 175);
-          doc.text(splitOpt, 15, y);
-          y += (splitOpt.length * 4);
+          const isCorrect = oIdx === q.correct ? " [CORRECTA]" : "";
+          const userMark = examState.answers[idx] === oIdx ? " -> (Tu respuesta)" : "";
+          const optLine = `   (${letters[oIdx]}) ${opt}${isCorrect}${userMark}`;
+          const splitOpt = doc.splitTextToSize(optLine, 175);
+          doc.text(splitOpt, 14, y);
+          y += (splitOpt.length * 3.7);
         });
 
         y += 2;
         if (y > 270) { doc.addPage(); y = 15; }
 
+        // Fórmula
         doc.setFont("helvetica", "bold");
-        doc.setTextColor(4, 120, 87);
-        const formulaText = `Fórmula: ${q.formula}`;
-        const splitFormula = doc.splitTextToSize(formulaText, 175);
-        doc.text(splitFormula, 15, y);
+        doc.setTextColor(5, 150, 105);
+        const formulaLine = `FÓRMULA NEMOTÉCNICA: ${q.formula}`;
+        const splitFormula = doc.splitTextToSize(formulaLine, 175);
+        doc.text(splitFormula, 14, y);
         doc.setTextColor(0, 0, 0);
-        y += (splitFormula.length * 4.5) + 5;
+        y += (splitFormula.length * 4) + 4.5;
       });
 
-      doc.save(`Caso_Practico_MUE_${Date.now()}.pdf`);
+      doc.save(`Simulacro_MUE_2026_${Date.now()}.pdf`);
     }
 
-    function returnToStartScreen() {
+    /* ==============================================================
+       CONTROL DE RETORNO Y TEMAS
+       ============================================================== */
+    function backToMainHome() {
       document.getElementById('screenResults').classList.add('hidden');
       document.getElementById('screenExam').classList.add('hidden');
       document.getElementById('screenHome').classList.remove('hidden');
@@ -1853,33 +2002,26 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function goToHomePrompt() {
-      if (document.getElementById('screenExam').classList.contains('flex')) {
-        openConfirmSubmitModal();
-      } else {
-        returnToStartScreen();
-      }
-    }
-
     function toggleDarkMode() {
       const isDark = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('mue_theme', isDark ? 'dark' : 'light');
-      updateThemeDisplay();
+      localStorage.setItem('mue_theme_pref', isDark ? 'dark' : 'light');
+      updateThemeIcons();
     }
 
-    function updateThemeDisplay() {
-      const isDark = document.documentElement.classList.contains('dark') || 
-                     (localStorage.getItem('mue_theme') === 'dark');
-      if (isDark) {
+    function initTheme() {
+      const saved = localStorage.getItem('mue_theme_pref');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
-        document.getElementById('themeSun').classList.remove('hidden');
-        document.getElementById('themeMoon').classList.add('hidden');
       } else {
         document.documentElement.classList.remove('dark');
-        document.getElementById('themeSun').classList.add('hidden');
-        document.getElementById('themeMoon').classList.add('hidden');
-        document.getElementById('themeMoon').classList.remove('hidden');
       }
+      updateThemeIcons();
+    }
+
+    function updateThemeIcons() {
+      const isDark = document.documentElement.classList.contains('dark');
+      document.getElementById('themeSun').classList.toggle('hidden', !isDark);
+      document.getElementById('themeMoon').classList.toggle('hidden', isDark);
     }
   </script>
 </body>
